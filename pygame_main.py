@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import os, sys
-import pygame
-from pygame.locals import *
+
 import time
 import operator
 import foodblock
@@ -9,7 +8,13 @@ import random
 import motko
 import datetime
 import multiprocessing
-
+if (len(sys.argv) == 2): #for some reason dont find pygame altought it is installed
+	if("no" not in sys.argv[1]):
+		import pygame
+		from pygame.locals import *
+else:
+	import pygame
+	from pygame.locals import *
 
 def trainer(name, size, hiddenlayer):
 	#self.threadLock.acquire()
@@ -24,14 +29,13 @@ class PyManMain:
 	"""The Main PyMan Class - This class handles the main 
 	initialization and creating of the Game."""
 
-	def __init__(self, width=1024,height=768, foodamount=300, motkotamount=1):
+	def __init__(self, width=1024,height=768, foodamount=600, motkotamount=2):
 		"""Initialize"""
 		self.gamescreen = True
 		if (len(sys.argv) == 2):
 			if("no" in sys.argv[1]):
 				self.gamescreen = False
 				print ("setted",sys.argv[1], self.gamescreen)
-			
 		if(self.gamescreen):
 			pygame.init()
 		self.BLACK = (  0,   0,   0)
@@ -59,7 +63,7 @@ class PyManMain:
 			self.screen = pygame.display.set_mode((self.width, self.height))
 			self.screen2 = pygame.display.set_mode((self.width, self.height))
 			self.myfont = pygame.font.SysFont("monospace", 15)
-		self.stoplayer = 7
+		self.stoplayer = 9
 		self.hiddenlayerstart = 2
 		self.hiddenlayer = 2
 		if(self.gamescreen):
@@ -83,7 +87,7 @@ class PyManMain:
 		childthreads = 0
 
 		while 1:
-			if(os.path.isfile((self.cwd+os.path.join('brains')+"motko_%d.pybrain_pkl"%(self.hiddenlayer))) is False):
+			if(os.path.isfile(os.path.join(self.cwd,'brains',"motko_%d.pybrain_pkl"%(self.hiddenlayer))) is False):
 				print ("training motko_%d.pybrain_pkl"%(self.hiddenlayer))
 				p = multiprocessing.Process(target=trainer, args=(("motko_%d"%(self.hiddenlayer)),[self.width,self.height],self.hiddenlayer))
 				trainers.append(p)
@@ -102,8 +106,9 @@ class PyManMain:
 			else:
 				print ("file motko_%d.pkl exist"%(self.hiddenlayer))
 			self.hiddenlayer += 1
-			if (self.hiddenlayer == self.stoplayer):
+			if (self.hiddenlayer > self.stoplayer):
 				break
+
 
 		print ("waiting threads to finish")
 		for t in trainers:
@@ -117,16 +122,18 @@ class PyManMain:
 
 
 		while(True):
-			if(os.path.isfile((self.cwd+os.path.join('brains')+"motko_%d.pybrain_pkl.pkl_noviable"%(self.hiddenlayer))) is False):
+			if(os.path.isfile(os.path.join(self.cwd,'brains',("motko_%d.pybrain_pkl.pkl_noviable"%(self.hiddenlayer)))) is False and os.path.isfile(os.path.join(self.cwd,'brains',("motko_%d.pybrain_pkl"%(self.hiddenlayer)))) is True):
 				motkoinstance = motko.motko(("motko_%d"%(self.hiddenlayer)),[self.width,self.height],self.hiddenlayer, True)
 				self.motkot.append(motkoinstance)
 			else:
 				print ("Skip motko_%d.pybrain_pkl.pkl_noviable"%(self.hiddenlayer))
-			self.hiddenlayer += 1
 			#motko.train()
-			if(len(self.motkot) == self.motkotamount):
+			print (len(self.motkot), self.motkotamount)
+			if(len(self.motkot) > self.motkotamount):
 				break
-
+			if(self.stoplayer > self.hiddenlayer):
+				break
+			self.hiddenlayer += 1
 												
 	def MainLoop(self):
 		"""This is the Main Loop of the Game"""
@@ -167,21 +174,23 @@ class PyManMain:
 							#	step = False
 							#else:
 							#	step = True
-			#print (len(self.motkot))
+			#print (len(self.motkot), self.hiddenlayer)
 			for k in range(len(self.motkot)-1,-1,-1):
 				#print (self.motkot[k].returnname())
 				status = self.motkot[k].areyouallive()
 				if status[0] == "dood" or status[0] ==  "icanseemyhousefromhere":
-					print ("!:",self.motkot[k].returnname(), status)
+					print ("!:",self.motkot[k].returnname(), status, self.motkot[k].getliveinfo())
 					#print (self.motkot[k].nn.inspect())
 					del self.motkot[k]
 					#deletemotkoindex.append(k)
 					if (self.hiddenlayer != self.stoplayer): # no more new motkos
 						self.hiddenlayer += 1
-						if(os.path.isfile((self.cwd+os.path.join('brains')+"motko_%d.pybrain_pkl"%(self.hiddenlayer))) is True):
-							if(os.path.isfile((self.cwd+os.path.join('brains')+"motko_%d.pybrain_pkl.pkl_noviable"%(self.hiddenlayer))) is False):
-								motko = motko(("motko_%d"%(self.hiddenlayer)),[self.width,self.height],self.hiddenlayer,True)
-								self.motkot.append(motko)
+						print(os.path.join(self.cwd,'brains',("motko_%d.pybrain_pkl"%(self.hiddenlayer))))
+						print (os.path.isfile(os.path.join(self.cwd,'brains',("motko_%d.pybrain_pkl"%(self.hiddenlayer)))))
+						if(os.path.isfile(os.path.join(self.cwd,'brains',("motko_%d.pybrain_pkl"%(self.hiddenlayer)))) is True):
+							if(os.path.isfile(os.path.join(self.cwd,'brains',("motko_%d.pybrain_pkl.pkl_noviable"%(self.hiddenlayer)))) is False):
+								motkoinstance = motko.motko(("motko_%d"%(self.hiddenlayer)),[self.width,self.height],self.hiddenlayer,True)
+								self.motkot.append(motkoinstance)
 								print ("appended motko motko_%d"%(self.hiddenlayer))
 							else:
 								print ("Skip motko_%d.pybrain_pkl.pkl_noviable"%(self.hiddenlayer))
@@ -229,6 +238,8 @@ class PyManMain:
 					#print (self.motkot[k].X,self.motkot[k].Y, self.motkot[k].eyeleft[0], self.motkot[k].eyeleft[1], self.motkot[k].eyesightleft[0],self.motkot[k].eyesightleft[1])
 					self.screen.blit(coretext, (0, textplaceY))
 					textplaceY += 15
+				#else:
+					#print(self.motkot[k].getliveinfo())
 			if(self.gamescreen):
 				for i in range(0,self.width,25):
 					for k in range(0,self.height,25):
@@ -246,7 +257,9 @@ class PyManMain:
 				#print (self.sleeptime,delta.total_seconds(), (delta.total_seconds()/1000), delta, (self.sleeptime-(delta.total_seconds()/1000)))
 				#time.sleep(self.sleeptime-(delta.total_seconds()/1000))
 				time.sleep(self.sleeptime)
-			if (self.hiddenlayer == self.stoplayer):
+			if (self.hiddenlayer > self.stoplayer):
+				break
+			if (len(self.motkot) == 0):
 				break
 				#screen2 print one motko
 

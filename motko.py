@@ -143,7 +143,7 @@ class motko:
 			self.trainer.trainUntilConvergence(validationProportion=0.1)
 
 	def responce(self,liveinput):
-		ds = SupervisedDataSet(4, 4)
+		#ds = SupervisedDataSet(4, 4)
 		"""for i in range(16):
 			trainingsetup = format(i, '04b')
 			trainingresult = self.gettraining([int(trainingsetup[0]),int(trainingsetup[1]),int(trainingsetup[2]),int(trainingsetup[3])])
@@ -167,7 +167,7 @@ class motko:
 			num_hiddeLayers = random.randint(2,20)
 		if(loadfromfile == True):
 			print (self.objectname)
-			self.nn = pickle.load(open(self.cwd+os.path.join('brains')+self.objectname, "rb" ))
+			self.nn = pickle.load(open(os.path.join(self.cwd,'brains',self.objectname), "rb" ))
 		else:
 			self.pybrain_init(hidden_layers=num_hiddeLayers)
 		print (filename, num_hiddeLayers)
@@ -278,22 +278,23 @@ class motko:
 			self.eyesightright = [15,5]
 
 	def saveNN(self):
-		with open(self.cwd+os.path.join('brains')+self.objectname, 'wb') as output:
+		print(os.path.join(self.cwd,'brains',self.objectname))
+		with open(os.path.join(self.cwd,'brains',self.objectname), 'wb') as output:
 			pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
 		print ("%s saved" % (self.objectname))
 
 	def saveViableNN(self):
-		with open((self.cwd+os.path.join('brains')+"%s.viable.pybrain_pkl")%(self.objectname), 'wb') as output:
+		with open(os.path.join(self.cwd,'brains',(("%s.viable.pybrain_pkl")%(self.objectname))), 'wb') as output:
 			pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
 		print ("%s saved" % (self.objectname))
 
 	def saveEaterNN(self):
-		with open((self.cwd+os.path.join('brains')+"%s.viable_eater.pybrain_pkl")%(self.objectname), 'wb') as output:
+		with open(os.path.join(self.cwd,'brains',(("%s.viable_eater.pybrain_pkl")%(self.objectname))), 'wb') as output:
 			pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
 		print ("%s saved" % (self.objectname))
 
 	def saveNotViableNN(self):
-		with open((self.cwd+os.path.join('brains')+"%s.pkl_noviable")%(self.objectname), 'wb') as output:
+		with open(os.path.join(self.cwd,'brains',(("%s.pkl_noviable")%(self.objectname))), 'wb') as output:
 			pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
 		print ("%s saved" % (self.objectname))
 
@@ -404,14 +405,12 @@ class motko:
 
 
 				if (self.movememory == self.roundfloat(neuraloutputs)):
-					self.movecount += 1
+					
 					if(dontPrintInfo == False):
 						print (self.movememory, self.movecount)
 				else:
 					self.movememory = self.roundfloat(neuraloutputs)
-
-
-
+				self.movecount += 1
 			except:
 				print ("Unexpected error:", sys.exc_info())
 				self.eated = ""
@@ -458,17 +457,17 @@ class motko:
 	def getliveinfo(self):
 		time2 = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
 		diff = time2 - self.startime
-		return [round(self.foodamount,4), round(self.speed,4), self.filename, diff.total_seconds()]
+		return [round(self.foodamount,4), round(self.speed,4), self.filename, diff.total_seconds(), self.movecount]
 
 	def areyouallive(self):
 		time2 = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
 		diff = time2 - self.startime
-		if(self.foodamount < -10.00 or self.foodamount > 10.00):
-				if (self.foodamount > 20.00):
+		if(self.foodamount < -5.00 or self.foodamount > 5.00):
+				if (self.foodamount > 5.00):
 					self.saveEaterNN()
 				else:
 					self.saveNotViableNN()
-				return (["dood","sloth", self.foodamount, self.move])
+				return (["dood", self.foodamount, self.move])
 		if(diff.total_seconds() == 300):
 			if(self.foodamount < -10.01 or self.foodamount > 10.00):
 				self.saveNotViableNN()
