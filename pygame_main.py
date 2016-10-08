@@ -28,10 +28,15 @@ class PyManMain:
 	def __init__(self, width=1024,height=768, foodamount=600, motkotamount=2):
 		"""Initialize"""
 		self.gamescreen = True
+		self.test = False
 		if (len(sys.argv) == 2):
 			if("no" in sys.argv[1]):
 				self.gamescreen = False
 				print ("setted",sys.argv[1], self.gamescreen)
+			elif("test" in sys.argv[1]):
+				self.gamescreen = False
+				print ("setted",sys.argv[1], self.gamescreen)
+				self.test = True
 		if(self.gamescreen):
 			pygame.init()
 		self.BLACK = (  0,   0,   0)
