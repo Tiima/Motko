@@ -157,6 +157,7 @@ class motko:
 		return self.nn.activate((liveinput[0],liveinput[1],liveinput[2],liveinput[3]))
 
 	def __init__(self,filename, eartsize, num_hiddeLayers="FF", loadfromfile=False):
+		self.cwd = os.getcwd()
 		self.filename = filename
 		self.objectname = filename
 		self.printEpilogue = filename 
@@ -166,7 +167,7 @@ class motko:
 			num_hiddeLayers = random.randint(2,20)
 		if(loadfromfile == True):
 			print (self.objectname)
-			self.nn = pickle.load(open(self.objectname, "rb" ))
+			self.nn = pickle.load(open(self.cwd+os.path.join('brains')+self.objectname, "rb" ))
 		else:
 			self.pybrain_init(hidden_layers=num_hiddeLayers)
 		print (filename, num_hiddeLayers)
@@ -277,22 +278,22 @@ class motko:
 			self.eyesightright = [15,5]
 
 	def saveNN(self):
-		with open(self.objectname, 'wb') as output:
+		with open(self.cwd+os.path.join('brains')+self.objectname, 'wb') as output:
 			pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
 		print ("%s saved" % (self.objectname))
 
 	def saveViableNN(self):
-		with open(("%s.viable.pybrain_pkl")%(self.objectname), 'wb') as output:
+		with open((self.cwd+os.path.join('brains')+"%s.viable.pybrain_pkl")%(self.objectname), 'wb') as output:
 			pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
 		print ("%s saved" % (self.objectname))
 
 	def saveEaterNN(self):
-		with open(("%s.viable_eater.pybrain_pkl")%(self.objectname), 'wb') as output:
+		with open((self.cwd+os.path.join('brains')+"%s.viable_eater.pybrain_pkl")%(self.objectname), 'wb') as output:
 			pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
 		print ("%s saved" % (self.objectname))
 
 	def saveNotViableNN(self):
-		with open(("%s.pkl_noviable")%(self.objectname), 'wb') as output:
+		with open((self.cwd+os.path.join('brains')+"%s.pkl_noviable")%(self.objectname), 'wb') as output:
 			pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
 		print ("%s saved" % (self.objectname))
 

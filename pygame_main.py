@@ -59,7 +59,8 @@ class PyManMain:
 			self.screen = pygame.display.set_mode((self.width, self.height))
 			self.screen2 = pygame.display.set_mode((self.width, self.height))
 			self.myfont = pygame.font.SysFont("monospace", 15)
-		self.stoplayer = 3
+		self.stoplayer = 7
+		self.hiddenlayerstart = 2
 		self.hiddenlayer = 2
 		if(self.gamescreen):
 			self.maxtrainers = 3
@@ -73,14 +74,16 @@ class PyManMain:
 			self.foodblocks.append(fb)
 
 		self.motkot = []
+		self.cwd = os.getcwd()
 		trainers = []
 		
 		print ("creating and training NNs start layer %s stop layeramount %s" %(self.hiddenlayer,self.stoplayer))
 
 		#trainer(("motko_%d"%(self.hiddenlayer)),[self.width,self.height],self.hiddenlayer)
 		childthreads = 0
+
 		while 1:
-			if(os.path.isfile(("motko_%d.pybrain_pkl"%(self.hiddenlayer))) is False):
+			if(os.path.isfile((self.cwd+os.path.join('brains')+"motko_%d.pybrain_pkl"%(self.hiddenlayer))) is False):
 				print ("training motko_%d.pybrain_pkl"%(self.hiddenlayer))
 				p = multiprocessing.Process(target=trainer, args=(("motko_%d"%(self.hiddenlayer)),[self.width,self.height],self.hiddenlayer))
 				trainers.append(p)
@@ -110,11 +113,11 @@ class PyManMain:
 		print ("creating and training NNs done")
 		
        
-		self.hiddenlayer = 5
+		self.hiddenlayer = self.hiddenlayerstart
 
 
 		while(True):
-			if(os.path.isfile(("motko_%d.pybrain_pkl.pkl_noviable"%(self.hiddenlayer))) is False):
+			if(os.path.isfile((self.cwd+os.path.join('brains')+"motko_%d.pybrain_pkl.pkl_noviable"%(self.hiddenlayer))) is False):
 				motkoinstance = motko.motko(("motko_%d"%(self.hiddenlayer)),[self.width,self.height],self.hiddenlayer, True)
 				self.motkot.append(motkoinstance)
 			else:
@@ -175,8 +178,8 @@ class PyManMain:
 					#deletemotkoindex.append(k)
 					if (self.hiddenlayer != self.stoplayer): # no more new motkos
 						self.hiddenlayer += 1
-						if(os.path.isfile(("motko_%d.pybrain_pkl"%(self.hiddenlayer))) is True):
-							if(os.path.isfile(("motko_%d.pybrain_pkl.pkl_noviable"%(self.hiddenlayer))) is False):
+						if(os.path.isfile((self.cwd+os.path.join('brains')+"motko_%d.pybrain_pkl"%(self.hiddenlayer))) is True):
+							if(os.path.isfile((self.cwd+os.path.join('brains')+"motko_%d.pybrain_pkl.pkl_noviable"%(self.hiddenlayer))) is False):
 								motko = motko(("motko_%d"%(self.hiddenlayer)),[self.width,self.height],self.hiddenlayer,True)
 								self.motkot.append(motko)
 								print ("appended motko motko_%d"%(self.hiddenlayer))
