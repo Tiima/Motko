@@ -1,2 +1,3 @@
 # Motko
-Testing bybrain simple game
+Testing bybrain ANN in simple game
+sagsagf
