@@ -6,27 +6,25 @@ import time
 import operator
 import foodblock
 import random
-from pybrain_trainer import piirtomotko
+import motko
 import datetime
 import multiprocessing
-
-
 
 
 def trainer(name, size, hiddenlayer):
 	#self.threadLock.acquire()
 	print ("Start training ",name,size,hiddenlayer)
-	motko = piirtomotko(name, size, hiddenlayer)
+	motkoinstance = motko.motko(name, size, hiddenlayer)
 	#self.threadLock.release()
-	motko.train()#(10000*(hiddenneuron*hiddenlayer)))
-	motko.saveNN()
+	motkoinstance.train()#(10000*(hiddenneuron*hiddenlayer)))
+	motkoinstance.saveNN()
 
 
 class PyManMain:
 	"""The Main PyMan Class - This class handles the main 
 	initialization and creating of the Game."""
 
-	def __init__(self, width=1024,height=768, foodamount=300, motkotamount=2):
+	def __init__(self, width=1024,height=768, foodamount=300, motkotamount=1):
 		"""Initialize"""
 		self.gamescreen = True
 		if (len(sys.argv) == 2):
@@ -61,7 +59,7 @@ class PyManMain:
 			self.screen = pygame.display.set_mode((self.width, self.height))
 			self.screen2 = pygame.display.set_mode((self.width, self.height))
 			self.myfont = pygame.font.SysFont("monospace", 15)
-		self.stoplayer = 10
+		self.stoplayer = 3
 		self.hiddenlayer = 2
 		if(self.gamescreen):
 			self.maxtrainers = 3
@@ -89,7 +87,7 @@ class PyManMain:
 				p.start()
 				childthreads += 1
 				#trainer(("motko_%d"%(self.hiddenlayer)),[self.width,self.height],self.hiddenlayer)
-				#motko = piirtomotko.piirtomotko(("motko_%d_%d"%(self.hiddenlayer,self.hiddenneuron)),[self.width,self.height],self.hiddenneuron,self.hiddenlayer)
+				#motko = motko.motko(("motko_%d_%d"%(self.hiddenlayer,self.hiddenneuron)),[self.width,self.height],self.hiddenneuron,self.hiddenlayer)
 				#motko.train(True, True, 10000)
 				#motko.saveNN()
 				if(childthreads == self.maxtrainers):
@@ -117,8 +115,8 @@ class PyManMain:
 
 		while(True):
 			if(os.path.isfile(("motko_%d.pybrain_pkl.pkl_noviable"%(self.hiddenlayer))) is False):
-				motko = piirtomotko(("motko_%d"%(self.hiddenlayer)),[self.width,self.height],self.hiddenlayer, True)
-				self.motkot.append(motko)
+				motkoinstance = motko.motko(("motko_%d"%(self.hiddenlayer)),[self.width,self.height],self.hiddenlayer, True)
+				self.motkot.append(motkoinstance)
 			else:
 				print ("Skip motko_%d.pybrain_pkl.pkl_noviable"%(self.hiddenlayer))
 			self.hiddenlayer += 1
@@ -179,7 +177,7 @@ class PyManMain:
 						self.hiddenlayer += 1
 						if(os.path.isfile(("motko_%d.pybrain_pkl"%(self.hiddenlayer))) is True):
 							if(os.path.isfile(("motko_%d.pybrain_pkl.pkl_noviable"%(self.hiddenlayer))) is False):
-								motko = piirtomotko(("motko_%d"%(self.hiddenlayer)),[self.width,self.height],self.hiddenlayer,True)
+								motko = motko(("motko_%d"%(self.hiddenlayer)),[self.width,self.height],self.hiddenlayer,True)
 								self.motkot.append(motko)
 								print ("appended motko motko_%d"%(self.hiddenlayer))
 							else:

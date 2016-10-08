@@ -1,0 +1,689 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"p",
+				"piirtomotko"
+			],
+			[
+				"move",
+				"movecount"
+			],
+			[
+				"foo",
+				"foodamount"
+			],
+			[
+				"ra",
+				"randint"
+			],
+			[
+				"fooda",
+				"foodavail"
+			],
+			[
+				"food",
+				"foodamount"
+			],
+			[
+				"si",
+				"size"
+			],
+			[
+				"hi",
+				"hiddenlayer"
+			],
+			[
+				"eyeri",
+				"eyeright"
+			],
+			[
+				"el",
+				"elif"
+			],
+			[
+				"e",
+				"eartsize"
+			],
+			[
+				"eye",
+				"eyeright"
+			],
+			[
+				"print",
+				"printtime"
+			],
+			[
+				"motko",
+				"motkotamount"
+			],
+			[
+				"ins",
+				"inspectTofile"
+			],
+			[
+				"n",
+				"NeuralNetwork"
+			],
+			[
+				"ou",
+				"ouputs"
+			],
+			[
+				"delta",
+				"deltaY"
+			],
+			[
+				"del",
+				"deltaY"
+			],
+			[
+				"lm",
+				"lNAmount"
+			],
+			[
+				"layer",
+				"layerNeuronAmount"
+			],
+			[
+				"con",
+				"conOut"
+			],
+			[
+				"co",
+				"conIn"
+			],
+			[
+				"connetion",
+				"connetionOut"
+			],
+			[
+				"conne",
+				"connetionIn"
+			],
+			[
+				"la",
+				"layerCount"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "README.md",
+			"settings":
+			{
+				"buffer_size": 42,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "motko.py",
+			"settings":
+			{
+				"buffer_size": 17040,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "pygame_main.py",
+			"settings":
+			{
+				"buffer_size": 9427,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 104.0,
+		"last_filter": "git:puth",
+		"selected_items":
+		[
+			[
+				"git:puth",
+				"Git: Push Current Branch"
+			],
+			[
+				"git:comm",
+				"Git: Commit"
+			],
+			[
+				"git:add",
+				"Git: Add Current File"
+			],
+			[
+				"git:co",
+				"Git: Commit"
+			],
+			[
+				"git",
+				"Package Control: Install Package"
+			],
+			[
+				"git:",
+				"GitX: Open GitX"
+			],
+			[
+				"intall",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"Build With: Python"
+			]
+		],
+		"width": 400.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/G/ownCloud/dataa/neuralnetworks/pybrainGit/Motko"
+	],
+	"file_history":
+	[
+		"/G/ownCloud/dataa/Aurinkokennonkääntäjä/Aurinkokennon kääntäjä.log",
+		"/G/ownCloud/dataa/neuralnetworks/pybraintest/pygame_test_pybrain.py",
+		"/G/ownCloud/dataa/neuralnetworks/pybraintest/pybrain_trainer.py",
+		"/G/ownCloud/dataa/neuralnetworks/pygame_test.py",
+		"/G/ownCloud/dataa/neuralnetworks/only_trainer.py",
+		"/G/ownCloud/dataa/neuralnetworks/foodblock.py",
+		"/G/ownCloud/dataa/neuralnetworks/NeuralNetwork.py",
+		"/G/ownCloud/dataa/neuralnetworks/piirtomotko.py",
+		"/G/ownCloud/dataa/neuralnetworks/pybrain_trainer.py",
+		"/G/ownCloud/dataa/neuralnetworks/pygame_test_pybrain.py",
+		"/G/ownCloud/dataa/neuralnetworks/pygame_trainer.py",
+		"/G/ownCloud/Taloyhtiö/Valaistus/listaus.log",
+		"/G/phantom/08052016/DJI_0004.SRT",
+		"/G/ownCloud/dataa/neuralnetworks/pygame_trainer_end15.py",
+		"/G/ownCloud/dataa/neuralnetworks/README",
+		"/G/ownCloud/dataa/neuralnetworks/pygame_trainerstop15.py",
+		"/G/ownCloud/dataa/neuralnetworks/NNStart_norand.py",
+		"/G/ownCloud/dataa/neuralnetworks/pygame_trainer15.py",
+		"/G/ownCloud/dataa/neuralnetworks/motkotester.py",
+		"/G/ownCloud/dataa/neuralnetworks/piirtotest2.py",
+		"/G/ownCloud/dataa/neuralnetworks/example.py",
+		"/G/ownCloud/dataa/readandsavetodb.py",
+		"/G/ownCloud/dataa/neuralnetworks/startNN.py",
+		"/G/ownCloud/dataa/neuralnetworks/startAlkumotkot.py",
+		"/G/ownCloud/dataa/neuralnetworks/PyMan/helpers.py",
+		"/G/ownCloud/dataa/neuralnetworks/PyMan/PyMan.py",
+		"/C/Users/Blackstorm/AppData/Local/Programs/Python/Python35-32/omat/PyX-0.14.1/INSTALL",
+		"/G/ownCloud/dataa/neuralnetworks/NN24",
+		"/G/ownCloud/dataa/neuralnetworks/NN50",
+		"/G/ownCloud/dataa/neuralnetworks/NN12",
+		"/C/Users/Blackstorm/AppData/Local/Temp/Rar$DIa0.693/INSTALL",
+		"/C/Users/Blackstorm/AppData/Local/Temp/Rar$DIa0.825/INSTALL",
+		"/C/Users/Blackstorm/AppData/Local/Temp/Rar$DIa0.277/README",
+		"/G/ownCloud/dataa/codespells/fibonazzi.py"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 90.0,
+		"where_history":
+		[
+			"<current file>"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"piirtomotko",
+			"hiddenneuron",
+			"inspectTofile",
+			"nn.",
+			"consumption",
+			"eaten",
+			"printEpilogue",
+			"eaten",
+			"eated",
+			"eaten",
+			"totalerror",
+			"trainingoutputs",
+			"sleeptime",
+			"responce",
+			"gettraining",
+			"motkotamount",
+			"saveViableNN",
+			"tarin",
+			"motkot",
+			"piirtomotko",
+			"hiddenneuron",
+			"objectname",
+			"train",
+			"num_hiddeLayers",
+			"gettraining",
+			"movecount",
+			"dontprintdata",
+			"live",
+			"10",
+			"trainer",
+			"1.9",
+			"Hight::",
+			"BAROMETER",
+			"print",
+			"getlivein",
+			"foodavail",
+			"consumption",
+			"foodblocks",
+			"live",
+			".live",
+			"saveNN",
+			"self.move",
+			"saveNotViableNN",
+			"save",
+			"saveViableNN",
+			"objectname",
+			"round",
+			"calculate_ErrorDeltaY",
+			"gettraining",
+			"[10,5]",
+			"[5,10]",
+			"16",
+			"foodInLeft",
+			"random",
+			"self.live(dontPrintInfo)",
+			"gettraining",
+			"trainingoutputs",
+			"background",
+			"screen",
+			"train",
+			"live",
+			"print",
+			"gettraining",
+			"live",
+			"gettraining",
+			"foodInRight",
+			"foodInLeft",
+			"foodInRightplace",
+			"foodInLeftplace",
+			"eyeleftplace",
+			"eyeright",
+			"eyeleft",
+			"gettraining",
+			"self.move",
+			"eyeleftplaze",
+			"eyeleftplace",
+			"gettraining",
+			"seteyes",
+			"directionvector",
+			"[direction",
+			"directionvector",
+			"[direction].[",
+			"directionvector[",
+			"eyeright[",
+			"eyeright.",
+			"eyeleft[",
+			"eyeleft.",
+			"foodamount",
+			"roundfloat",
+			"rount",
+			"=>",
+			"=<",
+			"k",
+			"saveNN",
+			"areyouallive",
+			"randmovevector",
+			"nn",
+			"objectname",
+			"print",
+			"saveNN",
+			"print (\"",
+			"print",
+			"shadow",
+			"]):\n",
+			"round(",
+			"roundfloat",
+			"foodavail",
+			"foodamount",
+			"elif(inputs[0] < 0.50 and inputs[1] => 0.50): \n\t\t\ttraining_outputs.append(0.50+inputs[1]) #eat\n\t\t\ttraining_outputs.append(0.50-inputs[0]) #no move\n\t\t\treturn training_outputs",
+			"num_endLayers",
+			"self.place[1]",
+			"self.place[0]",
+			"rect2.height",
+			"rect1.width",
+			"rect2.y",
+			"rect1.y",
+			"rect2.width",
+			"rect2.x",
+			"rect1.x",
+			"print (self.GRAY, i)",
+			"self.y",
+			"calculate_pd_total_net_input_wrt_input",
+			"calculate_ErrorDeltaY",
+			"calculate_pd_error_wrt_output",
+			"calculate_pd_total_net_input_wrt_input",
+			"calculate_pd_total_net_input_wrt_weight",
+			"calculate_ErrorDeltaY",
+			"[%d,%d]"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"1.2",
+			"",
+			"Hight:",
+			"[15,5]",
+			"[5,15]",
+			"self.live(dontPrintInfo,NoFeedBack)",
+			"eyerightplace",
+			"eyeleftplace",
+			"foodInRight",
+			"foodInLeft",
+			"eyeleftplace",
+			"[self.direction",
+			"[direction][",
+			"directionvector[direction].[",
+			"eyerightplace[",
+			"eyerightplace.",
+			"eyeleftplaze[",
+			"eyeleftplaze.",
+			">=",
+			"<=",
+			"#print (\"",
+			"self.Y",
+			"self.X",
+			"collidersize[1]",
+			"self.size[0]",
+			"collider[1]",
+			"self.place[1]",
+			"collidersize[0]",
+			"collider[0]",
+			"self.place[0]",
+			"#print (self.GRAY, i)",
+			"self.Y",
+			"[%f,%f]",
+			"eatOK",
+			"inputs",
+			"\t",
+			"filename,",
+			"\t\t\t\t\t\tprint (self.X)\n\t\t\t\t\t\tprint (self.Y)",
+			"\t",
+			"#print",
+			"calculate_ErrorDeltaY",
+			"calculate_ErrorDelta",
+			"calculate_DeltaY",
+			"\t"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "README.md",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 42,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								42,
+								42
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Markdown/Markdown.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "motko.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 17040,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "pygame_main.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9427,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								146,
+								146
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 100.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.git":
+	{
+		"height": 100.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 100.0
+	},
+	"pinned_build_system": "Packages/Python/Python.sublime-build",
+	"project": "motko.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 288.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

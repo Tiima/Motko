@@ -14,7 +14,7 @@ from pybrain.tools.shortcuts import buildNetwork
 from pybrain.structure import TanhLayer
 import pybrain
 
-class piirtomotko:
+class motko:
 
 	def gettraining(self, inputs):
 		#print ("calculated_output", calculated_output)
