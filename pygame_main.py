@@ -8,13 +8,9 @@ import random
 import motko
 import datetime
 import multiprocessing
-if (len(sys.argv) == 2): #for some reason dont find pygame altought it is installed
-	if("no" not in sys.argv[1]):
-		import pygame
-		from pygame.locals import *
-else:
-	import pygame
-	from pygame.locals import *
+import pygame
+from pygame.locals import *
+
 
 def trainer(name, size, hiddenlayer):
 	#self.threadLock.acquire()
@@ -185,8 +181,6 @@ class PyManMain:
 					#deletemotkoindex.append(k)
 					if (self.hiddenlayer != self.stoplayer): # no more new motkos
 						self.hiddenlayer += 1
-						print(os.path.join(self.cwd,'brains',("motko_%d.pybrain_pkl"%(self.hiddenlayer))))
-						print (os.path.isfile(os.path.join(self.cwd,'brains',("motko_%d.pybrain_pkl"%(self.hiddenlayer)))))
 						if(os.path.isfile(os.path.join(self.cwd,'brains',("motko_%d.pybrain_pkl"%(self.hiddenlayer)))) is True):
 							if(os.path.isfile(os.path.join(self.cwd,'brains',("motko_%d.pybrain_pkl.pkl_noviable"%(self.hiddenlayer)))) is False):
 								motkoinstance = motko.motko(("motko_%d"%(self.hiddenlayer)),[self.width,self.height],self.hiddenlayer,True)
