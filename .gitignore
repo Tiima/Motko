@@ -89,4 +89,4 @@ ENV/
 .ropeproject
 
 #motko brains
-.pybrain_pkl
+*.pybrain_pkl
