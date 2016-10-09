@@ -64,9 +64,9 @@ class PyManMain:
             self.screen = pygame.display.set_mode((self.width, self.height))
             self.screen2 = pygame.display.set_mode((self.width, self.height))
             self.myfont = pygame.font.SysFont("monospace", 15)
+        self.stoplayer = 60
         if(self.test):
             self.stoplayer = 9
-        self.stoplayer = 60
         self.hiddenlayerstart = 2
         self.hiddenlayer = 2
         if(self.gamescreen):
