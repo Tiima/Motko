@@ -66,8 +66,8 @@ class PyManMain:
             self.myfont = pygame.font.SysFont("monospace", 15)
         self.stoplayer = 60
         if(self.test):
-            self.stoplayer = 9
-        self.hiddenlayerstart = 2
+            self.stoplayer = 10
+        self.hiddenlayerstart = 5
         self.hiddenlayer = 2
         if(self.gamescreen):
             self.maxtrainers = 3
