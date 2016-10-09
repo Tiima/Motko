@@ -22,7 +22,7 @@ class PyManMain:
     """The Main PyMan Class - This class handles the main
     initialization and creating of the Game."""
 
-    def __init__(self, width=1024, height=768, foodamount=600, motkotamount=4):
+    def __init__(self, width=1024, height=768, foodamount=600, motkotamount=20):
         """Initialize"""
         self.gamescreen = True
         self.test = False
@@ -153,18 +153,18 @@ class PyManMain:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         sys.exit()
-                    elif event.type == pygame.locals.KEYDOWN:
-                        if (event.key == pygame.locals.K_RIGHT):
+                    elif event.type == pygame.KEYDOWN:
+                        if (event.key == pygame.K_RIGHT):
                             dontprintdata = False
-                        elif (event.key == pygame.locals.K_LEFT):
+                        elif (event.key == pygame.K_LEFT):
                             dontprintdata = True
                             print(len(self.motkot))
-                        elif (event.key == pygame.locals.K_UP):
+                        elif (event.key == pygame.K_UP):
                             # for k in range(self.motkotamount):
                             #     print (self.motkot[k].nn.inspect())
                             self.sleeptime += 0.01
                             print (self.sleeptime)
-                        elif (event.key == pygame.locals.K_DOWN):
+                        elif (event.key == pygame.K_DOWN):
                             if(self.sleeptime <= 0.01):
                                 self.sleeptime = 0.01
                             else:
@@ -229,13 +229,14 @@ class PyManMain:
                     self.motkot[k].live(dontprintdata, False)
                     # step = False
                 if(self.gamescreen):
-                    coretext = self.myfont.render(str(self.motkot[k].getliveinfo()), 1, (255, 255, 255), (0, 0, 0))
                     pygame.draw.rect(self.screen, self.RED, [self.motkot[k].X, self.motkot[k].Y, 5, 5], 0)
                     pygame.draw.rect(self.screen, self.PURB, [self.motkot[k].eyeleftplace[0], self.motkot[k].eyeleftplace[1], self.motkot[k].eyesightleft[0], self.motkot[k].eyesightleft[1]], 1)
                     pygame.draw.rect(self.screen, self.BLUE, [self.motkot[k].eyerightplace[0], self.motkot[k].eyerightplace[1], self.motkot[k].eyesightright[0], self.motkot[k].eyesightright[1]], 1)
                     # print (self.motkot[k].X, self.motkot[k].Y, self.motkot[k].eyeleft[0], self.motkot[k].eyeleft[1], self.motkot[k].eyesightleft[0], self.motkot[k].eyesightleft[1])
-                    self.screen.blit(coretext, (0, textplaceY))
-                    textplaceY += 15
+                    if (self.motkotamount < 11):
+                        coretext = self.myfont.render(str(self.motkot[k].getliveinfo()), 1, (255, 255, 255), (0, 0, 0))
+                        self.screen.blit(coretext, (0, textplaceY))
+                        textplaceY += 15
                 # else:
                     # print(self.motkot[k].getliveinfo())
             if(self.gamescreen):
