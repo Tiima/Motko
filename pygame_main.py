@@ -1,7 +1,6 @@
 # !/usr/bin/python
 import os
 import sys
-import time
 import foodblock
 import random
 import motko
@@ -22,7 +21,7 @@ class PyManMain:
     """The Main PyMan Class - This class handles the main
     initialization and creating of the Game."""
 
-    def __init__(self, width=1024, height=768, foodamount=600, motkotamount=20):
+    def __init__(self, width=1024, height=768, foodamount=600, motkotamount=5):
         """Initialize"""
         self.gamescreen = True
         self.test = False
@@ -31,12 +30,12 @@ class PyManMain:
             if("no" in sys.argv[1]):
                 self.gamescreen = False
                 print ("setted", sys.argv[1], self.gamescreen)
-                self.motkotamount = 10
+                self.motkotamount = 1
             elif("test" in sys.argv[1]):
                 self.gamescreen = False
                 print ("setted", sys.argv[1], self.gamescreen)
                 self.test = True
-                self.motkotamount = 2
+                self.motkotamount = 3
         if(self.gamescreen):
             pygame.init()
         self.BLACK = (0, 0, 0)
@@ -64,11 +63,11 @@ class PyManMain:
             self.screen = pygame.display.set_mode((self.width, self.height))
             self.screen2 = pygame.display.set_mode((self.width, self.height))
             self.myfont = pygame.font.SysFont("monospace", 15)
-        self.stoplayer = 60
+        self.stoplayer = 10
         if(self.test):
-            self.stoplayer = 10
+            self.stoplayer = 9
         self.hiddenlayerstart = 5
-        self.hiddenlayer = 2
+        self.hiddenlayer = self.hiddenlayerstart
         if(self.gamescreen):
             self.maxtrainers = 3
         else:
@@ -82,6 +81,7 @@ class PyManMain:
 
         self.motkot = []
         self.cwd = os.getcwd()
+
         trainers = []
 
         print ("creating and training NNs start layer %s stop layeramount %s" % (self.hiddenlayer, self.stoplayer))
@@ -178,20 +178,10 @@ class PyManMain:
             for k in range(len(self.motkot) - 1, -1, -1):
                 # print (self.motkot[k].returnname())
                 status = self.motkot[k].areyouallive()
-                if status[0] == "dood" or status[0] == "icanseemyhousefromhere":
+                if status[0] == "dood" or status[0] == "viable NN":
                     print ("!:", self.motkot[k].returnname(), status, self.motkot[k].getliveinfo())
                     # print (self.motkot[k].nn.inspect())
                     del self.motkot[k]
-                    # deletemotkoindex.append(k)
-                    if (self.hiddenlayer != self.stoplayer):  # no more new motkos
-                        self.hiddenlayer += 1
-                        if(os.path.isfile(os.path.join(self.cwd, 'brains', ("motko_%d.pybrain_pkl" % (self.hiddenlayer)))) is True):
-                            if(os.path.isfile(os.path.join(self.cwd, 'brains', ("motko_%d.pybrain_pkl.pkl_noviable" % (self.hiddenlayer)))) is False):
-                                motkoinstance = motko.motko(("motko_%d" % (self.hiddenlayer)), [self.width, self.height], self.hiddenlayer, loadfromfile=True, test=self.test)
-                                self.motkot.append(motkoinstance)
-                                print ("appended motko motko_%d" % (self.hiddenlayer))
-                            else:
-                                print ("Skip motko_%d.pybrain_pkl.pkl_noviable" % (self.hiddenlayer))
             textplaceY = 0
 
             for k in range(len(self.motkot)):
@@ -233,7 +223,7 @@ class PyManMain:
                     pygame.draw.rect(self.screen, self.PURB, [self.motkot[k].eyeleftplace[0], self.motkot[k].eyeleftplace[1], self.motkot[k].eyesightleft[0], self.motkot[k].eyesightleft[1]], 1)
                     pygame.draw.rect(self.screen, self.BLUE, [self.motkot[k].eyerightplace[0], self.motkot[k].eyerightplace[1], self.motkot[k].eyesightright[0], self.motkot[k].eyesightright[1]], 1)
                     # print (self.motkot[k].X, self.motkot[k].Y, self.motkot[k].eyeleft[0], self.motkot[k].eyeleft[1], self.motkot[k].eyesightleft[0], self.motkot[k].eyesightleft[1])
-                    if (self.motkotamount < 11):
+                    if (len(self.motkot) < 3):
                         coretext = self.myfont.render(str(self.motkot[k].getliveinfo()), 1, (255, 255, 255), (0, 0, 0))
                         self.screen.blit(coretext, (0, textplaceY))
                         textplaceY += 15
@@ -252,7 +242,7 @@ class PyManMain:
                 # delta = loopStop - loopStart
                 # print (self.sleeptime, delta.total_seconds(), (delta.total_seconds()/1000), delta, (self.sleeptime-(delta.total_seconds()/1000)))
                 # time.sleep(self.sleeptime-(delta.total_seconds()/1000))
-                time.sleep(self.sleeptime)
+                # time.sleep(self.sleeptime)
             if (self.hiddenlayer > self.stoplayer):
                 break
             if (len(self.motkot) == 0):

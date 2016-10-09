@@ -124,35 +124,37 @@ class motko:
             print ("fail!!!", inputs)
 
     def pybrain_init(self, input_amount=4, output_amount=4, hidden_layers=4):
-        ds = SupervisedDataSet(input_amount, output_amount)
+        self.ds = SupervisedDataSet(input_amount, output_amount)
         for i in range(16):
             trainingsetup = format(i, '04b')
             trainingresult = self.gettraining([int(trainingsetup[0]), int(trainingsetup[1]), int(trainingsetup[2]), int(trainingsetup[3])])
             # print ([int(trainingsetup[0]), int(trainingsetup[1]), int(trainingsetup[2]), int(trainingsetup[3])], trainingresult)
-            ds.addSample((int(trainingsetup[0]), int(trainingsetup[1]), int(trainingsetup[2]), int(trainingsetup[3])),
-                         (trainingresult[0], trainingresult[1], trainingresult[2], trainingresult[3]))
+            self.ds.addSample((int(trainingsetup[0]), int(trainingsetup[1]), int(trainingsetup[2]), int(trainingsetup[3])),
+                              (trainingresult[0], trainingresult[1], trainingresult[2], trainingresult[3]))
 
         self.nn = buildNetwork(4, hidden_layers, 4, bias=True, hiddenclass=TanhLayer)
-        self.trainer = BackpropTrainer(self.nn, ds)
+        self.trainer = BackpropTrainer(self.nn, self.ds)
 
     def train(self):
-        for _ in range(100):
+        for _ in range(1):
             # self.trainer.train()
-            self.trainer.trainUntilConvergence(validationProportion=0.1)
+            self.trainer.trainUntilConvergence(validationProportion=0.2)
 
     def responce(self, liveinput):
-        # ds = SupervisedDataSet(4, 4)
-        """for i in range(16):
-            trainingsetup = format(i, '04b')
-            trainingresult = self.gettraining([int(trainingsetup[0]), int(trainingsetup[1]), int(trainingsetup[2]), int(trainingsetup[3])])
-            # print ([int(trainingsetup[0]), int(trainingsetup[1]), int(trainingsetup[2]), int(trainingsetup[3])], trainingresult)
-            ds.addSample((int(trainingsetup[0]), int(trainingsetup[1]), int(trainingsetup[2]), int(trainingsetup[3])),
-                         (trainingresult[0], trainingresult[1], trainingresult[2], trainingresult[3]))"""
+        try:
+            trainingresult = self.gettraining([int(liveinput[0]), int(liveinput[1]), int(liveinput[2]), int(liveinput[3])])
 
-        """self.trainer = BackpropTrainer(self.nn, ds)"""
-        # self.trainer.train()
-        # self.trainer.trainUntilConvergence(validationProportion = 0.1)
-        return self.nn.activate((liveinput[0], liveinput[1], liveinput[2], liveinput[3]))
+            self.ds.addSample((int(liveinput[0]), int(liveinput[1]), int(liveinput[2]), int(liveinput[3])),
+                              (trainingresult[0], trainingresult[1], trainingresult[2], trainingresult[3]))
+            if(self.trainsteps == self.aftermovestrain):
+                self.trainer = BackpropTrainer(self.nn, self.ds)
+                self.trainer.train()
+                self.trainsteps = 0
+            if(len(self.ds) == 200):
+                self.ds.clear()
+            return self.nn.activate((liveinput[0], liveinput[1], liveinput[2], liveinput[3]))
+        except:
+            print ("Unexpected error:", sys.exc_info())
 
     def __init__(self, filename, eartsize, num_hiddeLayers="FF", loadfromfile=False, test=False):
         self.cwd = os.getcwd()
@@ -162,19 +164,17 @@ class motko:
         self.printEpilogue = filename
         self.objectname += ".pybrain_pkl"
         self.filename += ".log"
-        if(num_hiddeLayers == "FF"):
-            num_hiddeLayers = random.randint(2, 20)
-        if(loadfromfile):
-            print (self.objectname)
-            self.nn = pickle.load(open(os.path.join(self.cwd, 'brains', self.objectname), "rb"))
-        else:
-            self.pybrain_init(hidden_layers=num_hiddeLayers)
+        self.pybrain_init(hidden_layers=num_hiddeLayers)
         print (filename, num_hiddeLayers)
         self.foodamount = 0.9
         self.eartsize = eartsize
         self.X = random.randint(0, eartsize[0])
         self.Y = random.randint(0, eartsize[1])
-
+        if(loadfromfile):
+            print (self.objectname)
+            self.nn = pickle.load(open(os.path.join(self.cwd, 'brains', self.objectname), "rb"))
+        else:
+            self.pybrain_init(hidden_layers=num_hiddeLayers)
         self.consumption = 0.05
         self.foodavail = 0
         self.shadow = []
@@ -208,6 +208,8 @@ class motko:
         self.randmovevector()
         self.movecount = 0
         self.movememory = []
+        self.trainsteps = 0
+        self.aftermovestrain = 100
 
     def saveLog(self, filename, strinki, fileaut):
         target = open(filename, fileaut)
@@ -276,6 +278,22 @@ class motko:
             self.eyesightleft = [5, 15]
             self.eyesightright = [15, 5]
 
+    def reinit(self):
+        print("%s reinit" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
+        self.pybrain_init(hidden_layers=random.randint(1, 40))
+        self.randmovevector()
+        self.seteyes()
+        self.nn.randomize()
+        self.foodamount = 1
+        self.X = random.randint(0, self.eartsize[0])
+        self.Y = random.randint(0, self.eartsize[1])
+        self.shadow[:] = []
+        self.movecount = 0
+        self.movememory = []
+        self.train()
+        self.startime = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
+        print("%s reinit done" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
+
     def saveNN(self):
         print(os.path.join(self.cwd, 'brains', self.objectname))
         with open(os.path.join(self.cwd, 'brains', self.objectname), 'wb') as output:
@@ -326,7 +344,7 @@ class motko:
                             print (self.printEpilogue, "eated", self.foodavail, "OK")
 
                     else:
-                        if(dontPrintInfo):
+                        if(dontPrintInfo is False):
                             print (self.printEpilogue, "eated", self.foodavail, "NOK")
                             print ("IN", [hungri, foodtoeat, gotoleft, gotoright], "Nout:", self.roundfloat(neuraloutputs))
 
@@ -407,6 +425,7 @@ class motko:
                 else:
                     self.movememory = self.roundfloat(neuraloutputs)
                 self.movecount += 1
+                self.trainsteps += 1
             except:
                 print ("Unexpected error:", sys.exc_info())
                 self.eated = ""
@@ -464,29 +483,30 @@ class motko:
             elif(diff.total_seconds() > 60):
                 self.saveViableNN()
                 # self.saveLog(self.filename, self.nn.inspectTofile(), 'a+')
-                return (["icanseemyhousefromhere"])
+                return (["viable NN"])
             if(self.move == "exception dood"):
                 return (["dood", self.move])
             return ["ok"]
         else:
             if(self.foodamount < -5.00 or self.foodamount > 5.00):
                     if (self.foodamount > 5.00):
-                        self.saveEaterNN()
+                        print ("Not viable motko, randomize %s" % (self.getliveinfo()))
+                        self.reinit()
                     else:
-                        self.saveNotViableNN()
-                    return (["dood", self.foodamount, self.move])
-            if(diff.total_seconds() == 300):
-                if(self.foodamount < -10.01 or self.foodamount > 10.00):
-                    self.saveNotViableNN()
-                    return (["dood", "300s", self.foodamount, self.move])
-            elif(diff.total_seconds() == 400):
-                if(self.foodamount < -4.01 or self.foodamount > 4.00):
-                    self.saveNotViableNN()
-                    return (["dood", "600s", self.foodamount, self.move])
-            elif(diff.total_seconds() > 600):
+                        print ("Not viable motko, randomize %s" % (self.getliveinfo()))
+                        self.reinit()
+            if(diff.total_seconds() == 60):
+                if(self.foodamount < -5.01 or self.foodamount > 5.00):
+                        print ("Not viable motko, randomize %s" % (self.getliveinfo()))
+                        self.reinit()
+            elif(diff.total_seconds() == 120):
+                if(self.foodamount < -5.01 or self.foodamount > 5.00):
+                        print ("Not viable motko, randomize %s" % (self.getliveinfo()))
+                        self.reinit()
+            elif(diff.total_seconds() > 180):
                 self.saveViableNN()
                 # self.saveLog(self.filename, self.nn.inspectTofile(), 'a+')
-                return (["icanseemyhousefromhere"])
+                return (["viable NN"])
             if(self.move == "exception dood"):
                 return (["dood", self.move])
             return ["ok"]
