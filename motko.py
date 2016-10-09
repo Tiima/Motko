@@ -3,17 +3,13 @@
 import os
 import sys
 import time
-import operator
-import foodblock
 import random
 import datetime
-import multiprocessing
 import pickle
 from pybrain.supervised.trainers import BackpropTrainer
 from pybrain.datasets import SupervisedDataSet
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.structure import TanhLayer
-import pybrain
 
 
 class motko:

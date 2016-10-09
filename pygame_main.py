@@ -7,7 +7,6 @@ import random
 import motko
 import multiprocessing
 import pygame
-# from pygame.locals import *
 
 
 def trainer(name, size, hiddenlayer):
@@ -23,18 +22,21 @@ class PyManMain:
     """The Main PyMan Class - This class handles the main
     initialization and creating of the Game."""
 
-    def __init__(self, width=1024, height=768, foodamount=600, motkotamount=2):
+    def __init__(self, width=1024, height=768, foodamount=600, motkotamount=4):
         """Initialize"""
         self.gamescreen = True
         self.test = False
+        self.motkotamount = motkotamount
         if (len(sys.argv) == 2):
             if("no" in sys.argv[1]):
                 self.gamescreen = False
                 print ("setted", sys.argv[1], self.gamescreen)
+                self.motkotamount = 10
             elif("test" in sys.argv[1]):
                 self.gamescreen = False
                 print ("setted", sys.argv[1], self.gamescreen)
                 self.test = True
+                self.motkotamount = 2
         if(self.gamescreen):
             pygame.init()
         self.BLACK = (0, 0, 0)
@@ -56,7 +58,7 @@ class PyManMain:
         self.height = height
         self.foodamount = foodamount
         self.foodblocks = []
-        self.motkotamount = motkotamount
+
         self.sleeptime = 0.1
         if(self.gamescreen):
             self.screen = pygame.display.set_mode((self.width, self.height))
@@ -64,7 +66,7 @@ class PyManMain:
             self.myfont = pygame.font.SysFont("monospace", 15)
         if(self.test):
             self.stoplayer = 9
-        self.stoplayer = 9
+        self.stoplayer = 60
         self.hiddenlayerstart = 2
         self.hiddenlayer = 2
         if(self.gamescreen):
@@ -127,9 +129,9 @@ class PyManMain:
                 print ("Skip motko_%d.pybrain_pkl.pkl_noviable" % (self.hiddenlayer))
             # motko.train()
             print (len(self.motkot), self.motkotamount)
-            if(len(self.motkot) > self.motkotamount):
+            if(len(self.motkot) >= self.motkotamount):
                 break
-            if(self.stoplayer > self.hiddenlayer):
+            if(self.hiddenlayer > self.stoplayer):
                 break
             self.hiddenlayer += 1
 
@@ -140,7 +142,7 @@ class PyManMain:
             self.background = pygame.Surface(self.screen.get_size())
             self.background = self.background.convert()
             self.background.fill((0, 0, 0))
-        print ("mainloop")
+        print ("mainloop testing %s motkos at same time" % (self.motkotamount))
         dontprintdata = True
         step = True
         # deletemotkoindex = []
@@ -151,18 +153,18 @@ class PyManMain:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         sys.exit()
-                    elif event.type == KEYDOWN:
-                        if (event.key == K_RIGHT):
+                    elif event.type == pygame.locals.KEYDOWN:
+                        if (event.key == pygame.locals.K_RIGHT):
                             dontprintdata = False
-                        elif (event.key == K_LEFT):
+                        elif (event.key == pygame.locals.K_LEFT):
                             dontprintdata = True
                             print(len(self.motkot))
-                        elif (event.key == K_UP):
+                        elif (event.key == pygame.locals.K_UP):
                             # for k in range(self.motkotamount):
                             #     print (self.motkot[k].nn.inspect())
                             self.sleeptime += 0.01
                             print (self.sleeptime)
-                        elif (event.key == K_DOWN):
+                        elif (event.key == pygame.locals.K_DOWN):
                             if(self.sleeptime <= 0.01):
                                 self.sleeptime = 0.01
                             else:
