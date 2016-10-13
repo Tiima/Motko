@@ -6,6 +6,7 @@ import random
 import motko
 import multiprocessing
 import pygame
+import time
 
 
 def trainer(name, size, hiddenlayer):
@@ -15,6 +16,16 @@ def trainer(name, size, hiddenlayer):
     # self.threadLock.release()
     motkoinstance.train()  # (10000*(hiddenneuron*hiddenlayer)))
     motkoinstance.saveNN()
+
+
+def backroundtrainer(size):
+    while(1):
+        motkoslist = os.listdir(os.path.join(os.getcwd(), 'brains'))
+        if(len(motkoslist) < 4):
+            motkoinstance = motko.motko("FF", size, "FF")
+            motkoinstance.train()  # (10000*(hiddenneuron*hiddenlayer)))
+            motkoinstance.saveNN()
+        time.sleep(1)
 
 
 class PyManMain:
@@ -35,7 +46,7 @@ class PyManMain:
                 self.gamescreen = False
                 print ("setted", sys.argv[1], self.gamescreen)
                 self.test = True
-                self.motkotamount = 3
+                self.motkotamount = 2
         if(self.gamescreen):
             pygame.init()
         self.BLACK = (0, 0, 0)
@@ -63,9 +74,9 @@ class PyManMain:
             self.screen = pygame.display.set_mode((self.width, self.height))
             self.screen2 = pygame.display.set_mode((self.width, self.height))
             self.myfont = pygame.font.SysFont("monospace", 15)
-        self.stoplayer = 10
+        self.trainingmotkoamount = 15
         if(self.test):
-            self.stoplayer = 9
+            self.trainingmotkoamount = 7
         self.hiddenlayerstart = 5
         self.hiddenlayer = self.hiddenlayerstart
         if(self.gamescreen):
@@ -84,15 +95,17 @@ class PyManMain:
 
         trainers = []
 
-        print ("creating and training NNs start layer %s stop layeramount %s" % (self.hiddenlayer, self.stoplayer))
+        print ("creating and training NNs start layer %s stop layeramount %s" % (self.hiddenlayer, self.trainingmotkoamount))
 
         # trainer(("motko_%d"%(self.hiddenlayer)), [self.width, self.height], self.hiddenlayer)
         childthreads = 0
 
-        while 1:
-            if(os.path.isfile(os.path.join(self.cwd, 'brains', "motko_%d.pybrain_pkl" % (self.hiddenlayer))) is False):
-                print ("training motko_%d.pybrain_pkl" % (self.hiddenlayer))
-                p = multiprocessing.Process(target=trainer, args=(("motko_%d" % (self.hiddenlayer)), [self.width, self.height], self.hiddenlayer))
+        motkoslist = os.listdir(os.path.join(self.cwd, 'brains'))
+        print("motkos available %s" % (len(motkoslist)))
+        if(len(motkoslist) < self.trainingmotkoamount):
+            for i in range(self.trainingmotkoamount - len(motkoslist)):
+                print ("training motko")
+                p = multiprocessing.Process(target=trainer, args=("FF", [self.width, self.height], self.hiddenlayer))
                 trainers.append(p)
                 p.start()
                 childthreads += 1
@@ -106,11 +119,9 @@ class PyManMain:
                         # print ('t.is_alive()', t.is_alive())
                         t.join()
                     childthreads = 0
-            else:
-                print ("file motko_%d.pkl exist" % (self.hiddenlayer))
-            self.hiddenlayer += 1
-            if (self.hiddenlayer > self.stoplayer):
-                break
+                self.hiddenlayer += 1
+                if (self.hiddenlayer > self.trainingmotkoamount):
+                    break
 
         print ("waiting threads to finish")
         for t in trainers:
@@ -121,19 +132,15 @@ class PyManMain:
 
         self.hiddenlayer = self.hiddenlayerstart
 
-        while(True):
-            if(os.path.isfile(os.path.join(self.cwd, 'brains', ("motko_%d.pybrain_pkl.pkl_noviable" % (self.hiddenlayer)))) is False and os.path.isfile(os.path.join(self.cwd, 'brains', ("motko_%d.pybrain_pkl" % (self.hiddenlayer)))) is True):
-                motkoinstance = motko.motko(("motko_%d" % (self.hiddenlayer)), [self.width, self.height], self.hiddenlayer, loadfromfile=True, test=self.test)
-                self.motkot.append(motkoinstance)
-            else:
-                print ("Skip motko_%d.pybrain_pkl.pkl_noviable" % (self.hiddenlayer))
-            # motko.train()
-            print (len(self.motkot), self.motkotamount)
+        motkoslist = os.listdir(os.path.join(self.cwd, 'brains'))
+        for k in range(len(motkoslist)):
+            motkoinstance = motko.motko(motkoslist[k], [self.width, self.height], self.hiddenlayer, loadfromfile=True, test=self.test)
+            self.motkot.append(motkoinstance)
             if(len(self.motkot) >= self.motkotamount):
                 break
-            if(self.hiddenlayer > self.stoplayer):
-                break
-            self.hiddenlayer += 1
+
+        p = multiprocessing.Process(target=backroundtrainer, args=([self.width, self.height],))
+        p.start()
 
     def MainLoop(self):
         """This is the Main Loop of the Game"""
@@ -223,7 +230,7 @@ class PyManMain:
                     pygame.draw.rect(self.screen, self.PURB, [self.motkot[k].eyeleftplace[0], self.motkot[k].eyeleftplace[1], self.motkot[k].eyesightleft[0], self.motkot[k].eyesightleft[1]], 1)
                     pygame.draw.rect(self.screen, self.BLUE, [self.motkot[k].eyerightplace[0], self.motkot[k].eyerightplace[1], self.motkot[k].eyesightright[0], self.motkot[k].eyesightright[1]], 1)
                     # print (self.motkot[k].X, self.motkot[k].Y, self.motkot[k].eyeleft[0], self.motkot[k].eyeleft[1], self.motkot[k].eyesightleft[0], self.motkot[k].eyesightleft[1])
-                    if (len(self.motkot) < 3):
+                    if (len(self.motkot) < 6):
                         coretext = self.myfont.render(str(self.motkot[k].getliveinfo()), 1, (255, 255, 255), (0, 0, 0))
                         self.screen.blit(coretext, (0, textplaceY))
                         textplaceY += 15
@@ -243,7 +250,7 @@ class PyManMain:
                 # print (self.sleeptime, delta.total_seconds(), (delta.total_seconds()/1000), delta, (self.sleeptime-(delta.total_seconds()/1000)))
                 # time.sleep(self.sleeptime-(delta.total_seconds()/1000))
                 # time.sleep(self.sleeptime)
-            if (self.hiddenlayer > self.stoplayer):
+            if (self.hiddenlayer > self.trainingmotkoamount):
                 break
             if (len(self.motkot) == 0):
                 break
