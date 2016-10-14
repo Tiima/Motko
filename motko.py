@@ -12,6 +12,12 @@ from pybrain.tools.shortcuts import buildNetwork
 from pybrain.structure import TanhLayer
 
 
+"""
+Motko "tuo oman tiensa kulkia"
+
+"""
+
+
 class motko:
 
     def gettraining(self, inputs):
@@ -124,6 +130,7 @@ class motko:
             print ("fail!!!", inputs)
 
     def pybrain_init(self, input_amount=4, output_amount=4, hidden_layers=4):
+        # TODO Randomize Hiden clcasses
         self.ds = SupervisedDataSet(input_amount, output_amount)
         for i in range(16):
             trainingsetup = format(i, '04b')
@@ -132,13 +139,20 @@ class motko:
             self.ds.addSample((int(trainingsetup[0]), int(trainingsetup[1]), int(trainingsetup[2]), int(trainingsetup[3])),
                               (trainingresult[0], trainingresult[1], trainingresult[2], trainingresult[3]))
 
-        self.nn = buildNetwork(4, hidden_layers, 4, bias=True, hiddenclass=TanhLayer)
+        self.nn = buildNetwork(4, 5, 4, bias=True, hiddenclass=TanhLayer)
         self.trainer = BackpropTrainer(self.nn, self.ds)
 
     def train(self):
-        for _ in range(100):
+        for i in range(100):
             # self.trainer.train()
             self.trainer.trainUntilConvergence(validationProportion=0.2)
+
+    def trainloopamount(self, Trainingloops=1, printvalues=True):
+        for i in range(Trainingloops - 1):
+            # self.trainer.train()
+            self.trainer.train()  # , self.nn.params)
+
+        print(self.trainer.train())
 
     def responce(self, liveinput):
         try:
@@ -161,21 +175,15 @@ class motko:
     def __init__(self, filename, eartsize, num_hiddeLayers, loadfromfile=False, test=False):
         self.cwd = os.getcwd()
         self.test = test
-        if("FF" in filename):
-            num_hiddeLayers = random.randint(5, 120)
-            self.filename = "motko_%d.pybrain_pkl" % (num_hiddeLayers)
-        else:
-            self.filename = filename
-        self.filename = self.filename
+        self.filename = filename
         self.pybrain_init(hidden_layers=num_hiddeLayers)
-        print (filename, num_hiddeLayers)
         self.foodamount = 0.9
         self.eartsize = eartsize
         self.X = random.randint(0, eartsize[0])
         self.Y = random.randint(0, eartsize[1])
         self.dontdelete = True
         if(loadfromfile):
-            print (self.filename)
+            # print (self.filename)
             self.nn = pickle.load(open(os.path.join(self.cwd, 'brains', self.filename), "rb"))
             if(self.dontdelete is False):
                 os.remove(os.path.join(self.cwd, 'brains', self.filename))
@@ -321,10 +329,14 @@ class motko:
             self.startime = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
 
     def saveNN(self):
-        print(os.path.join(self.cwd, 'brains', self.filename))
         with open(os.path.join(self.cwd, 'brains', self.filename), 'wb') as output:
             pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
         print ("%s saved" % (self.filename))
+
+    def saveNNwithname(self, name):
+        with open(os.path.join(self.cwd, 'brains', name), 'wb') as output:
+            pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
+        print ("%s saved" % (name))
 
     def saveViableNN(self):
         with open(os.path.join(self.cwd, 'brains', (("%s.viable.pybrain_pkl") % (self.filename))), 'wb') as output:
@@ -358,7 +370,7 @@ class motko:
                     gotoright = 1
                 # trainingoutputs = self.gettraining([hungri, foodtoeat, gotoleft, gotoright])
 
-                neuraloutputs = self.responce([hungri, foodtoeat, gotoleft, gotoright])
+                neuraloutputs = self.responce([hungri, self.foodavail, gotoleft, gotoright])
 
                 if(dontPrintInfo is False):
                     # print ("IN", [hungri, foodtoeat, gotoleft, gotoright], "Tout:", self.roundfloat(trainingoutputs), "Nout:", self.roundfloat(neuraloutputs), [self.foodamount, self.foodavail, self.foodInLeft, self.foodInRight], self.nn.totalerror)
@@ -501,13 +513,8 @@ class motko:
         diff = time2 - self.startime
         if(self.test):
             if(self.foodamount < -5.00 or self.foodamount > 5.00):
-                if (self.foodamount > 5.00):
-                    self.saveEaterNN()
-                else:
-                    self.saveNotViableNN()
                 return (["dood", self.foodamount, self.move])
-            elif(diff.total_seconds() > 60):
-                self.saveViableNN()
+            elif(diff.total_seconds() > 30):
                 # self.saveLog(self.filename, self.nn.inspectTofile(), 'a+')
                 return (["viable NN"])
             if(self.move == "exception dood"):
@@ -516,24 +523,14 @@ class motko:
         else:
             if(self.foodamount < -5.00 or self.foodamount > 5.00):
                     if (self.foodamount > 5.00):
-                        print ("Not viable motko, randomize %s" % (self.getliveinfo()))
-                        self.reinit()
-                        return ["ok"]
+                        # print ("Not viable motko, randomize %s" % (self.getliveinfo()))
+                        # self.reinit()
+                        return ["dood"]
                     else:
-                        print ("Not viable motko, randomize %s" % (self.getliveinfo()))
-                        self.reinit()
-                        return ["ok"]
-            if(diff.total_seconds() == 60):
-                if(self.foodamount < -5.01 or self.foodamount > 5.00):
-                        print ("Not viable motko, randomize %s" % (self.getliveinfo()))
-                        self.reinit()
-                        return ["ok"]
-            elif(diff.total_seconds() == 120):
-                if(self.foodamount < -5.01 or self.foodamount > 5.00):
-                        print ("Not viable motko, randomize %s" % (self.getliveinfo()))
-                        self.reinit()
-                        return ["ok"]
-            elif(diff.total_seconds() > 1200):
+                        # print ("Not viable motko, randomize %s" % (self.getliveinfo()))
+                        # self.reinit()
+                        return ["dood"]
+            elif(diff.total_seconds() > 900):
                 self.saveViableNN()
                 # self.saveLog(self.filename, self.nn.inspectTofile(), 'a+')
                 return (["viable NN"])
@@ -565,3 +562,57 @@ class motko:
             return 1
         elif(left == 0.01 and right == 0.01):
             return 2
+
+    def eat(self, inputs):
+        # EAT energy, food avail, food left, food right, food color, color,
+        # will 1 if food energy is bellow 0,75 bit if more food avail in left or right then turn and go there
+        outputs = [1, 0, 0, 0, 0, 0]  # default response
+        if(inputs[0] < 0.75):  # hungry
+            if(inputs[1] < inputs[2] or inputs[4] == inputs[5]):  # food in left more than front and food color is different than in your color meaning eatable
+                outputs[0] = 0  # dont eat
+                outputs[1] = 0  # dont eat anything
+                outputs[2] = 1  # move
+                outputs[4] = 1  # turn left
+                outputs[5] = 0  # do not turn right
+            elif(inputs[1] < inputs[3] or inputs[4] == inputs[5]):  # food in right more than front
+                outputs[0] = 0  # dont eat
+                outputs[1] = 0  # dont eat anything
+                outputs[2] = 1  # move
+                outputs[4] = 0  # do not turn left
+                outputs[5] = 1  # turn right
+            elif(inputs[4] == inputs[5]):  # food is same color dont eat it will kill you
+                outputs[0] = 0  # dont eat
+                outputs[1] = 0  # dont eat anything
+                outputs[2] = 1  # move
+                outputs[4] = 1  # turn right we prefer left
+                outputs[5] = 0  # do not turn right
+            elif(inputs[4] != inputs[5]):  # food is different color than you, it is eatable
+                if((inputs[0] + inputs[1]) < 1.5):  # it is not too mutch
+                    outputs[0] = 1  # dont eat
+                    outputs[1] = inputs[1]  # eat all
+                    outputs[2] = 1  # move
+                    outputs[4] = 0  # turn right
+                    outputs[5] = 0  # do not turn right
+                    outputs[3] = 0.25  # slow down food front of you
+                else:
+                    outputs[0] = 1  # dont eat
+                    outputs[1] = (inputs[0] + inputs[1]) - 1  # dont eat anything
+                    outputs[2] = 1  # move
+                    outputs[4] = 0  # turn right
+                    outputs[5] = 0  # do not turn right
+        if(0.75 < inputs[0] <= 1):  # hungry)
+            outputs[3] = 0.25
+        if(0.5 < inputs[0] <= 0.75):  # hungry)
+            outputs[3] = 0.50
+        if(0.25 < inputs[0] <= 0.50):  # hungry)
+            outputs[3] = 0.75
+        if(0.0 < inputs[0] <= 0.25):  # hungry)
+            outputs[3] = 0.75
+        return [0, 0, 0, 0, 0, 0]
+
+    def gettraining2(self, inputs):
+        # inputs are: energy, food avail, food left, food right, food color, color, meeting motko color,
+        # outputs are: eat, eat amount, move, speed, turn left, turn tight, kill, flee, sex
+        # divide trainign to smaller parts
+        eatoutputs = eat(inputs)  # eat, eat amount, move, speed, turn left, turn tight
+        print (eatoutputs)

@@ -4,35 +4,26 @@ import sys
 import foodblock
 import random
 import motko
-import multiprocessing
 import pygame
-import time
 
 
-def trainer(name, size, hiddenlayer):
-    # self.threadLock.acquire()
-    print ("Start training ", name, size, hiddenlayer)
-    motkoinstance = motko.motko(name, size, hiddenlayer)
-    # self.threadLock.release()
-    motkoinstance.train()  # (10000*(hiddenneuron*hiddenlayer)))
-    motkoinstance.saveNN()
-
-
-def backroundtrainer(size):
-    while(1):
-        motkoslist = os.listdir(os.path.join(os.getcwd(), 'brains'))
-        if(len(motkoslist) < 4):
-            motkoinstance = motko.motko("FF", size, "FF")
-            motkoinstance.train()  # (10000*(hiddenneuron*hiddenlayer)))
-            motkoinstance.saveNN()
-        time.sleep(1)
+def loadmotkos(path, amount, trainingloops, size, hiddenlayers, loadfromfile, test):
+    loadedmotkos = []
+    motkoslist = os.listdir(os.path.join(path, 'brains'))
+    for k in range(len(motkoslist)):
+        if(int(motkoslist[k].split('_')[1]) == trainingloops):
+            motkoinstance = motko.motko(motkoslist[k], size, hiddenlayers, loadfromfile, test)
+            loadedmotkos.append(motkoinstance)
+            if(len(loadedmotkos) >= amount):
+                return loadedmotkos
+    return loadedmotkos
 
 
 class PyManMain:
     """The Main PyMan Class - This class handles the main
     initialization and creating of the Game."""
 
-    def __init__(self, width=1024, height=768, foodamount=600, motkotamount=5):
+    def __init__(self, width=1024, height=768, foodamount=300, motkotamount=20):
         """Initialize"""
         self.gamescreen = True
         self.test = False
@@ -68,79 +59,22 @@ class PyManMain:
         self.height = height
         self.foodamount = foodamount
         self.foodblocks = []
+        self.trainingloops = 1
+        self.hiddenlayers = 4
 
         self.sleeptime = 0.1
         if(self.gamescreen):
             self.screen = pygame.display.set_mode((self.width, self.height))
             self.screen2 = pygame.display.set_mode((self.width, self.height))
             self.myfont = pygame.font.SysFont("monospace", 15)
-        self.trainingmotkoamount = 15
-        if(self.test):
-            self.trainingmotkoamount = 7
-        self.hiddenlayerstart = 5
-        self.hiddenlayer = self.hiddenlayerstart
-        if(self.gamescreen):
-            self.maxtrainers = 3
-        else:
-            self.maxtrainers = 4
 
         for i in range(self.foodamount):
             tempplace = [random.randint(0, self.width), random.randint(0, self.height)]
             fb = foodblock.foodblock(tempplace, [2, 2])
             # print (fb.getinfo())
             self.foodblocks.append(fb)
-
-        self.motkot = []
         self.cwd = os.getcwd()
-
-        trainers = []
-
-        print ("creating and training NNs start layer %s stop layeramount %s" % (self.hiddenlayer, self.trainingmotkoamount))
-
-        # trainer(("motko_%d"%(self.hiddenlayer)), [self.width, self.height], self.hiddenlayer)
-        childthreads = 0
-
-        motkoslist = os.listdir(os.path.join(self.cwd, 'brains'))
-        print("motkos available %s" % (len(motkoslist)))
-        if(len(motkoslist) < self.trainingmotkoamount):
-            for i in range(self.trainingmotkoamount - len(motkoslist)):
-                print ("training motko")
-                p = multiprocessing.Process(target=trainer, args=("FF", [self.width, self.height], self.hiddenlayer))
-                trainers.append(p)
-                p.start()
-                childthreads += 1
-                # trainer(("motko_%d"%(self.hiddenlayer)), [self.width, self.height], self.hiddenlayer)
-                # motko = motko.motko(("motko_%d_%d"%(self.hiddenlayer, self.hiddenneuron)), [self.width, self.height], self.hiddenneuron, self.hiddenlayer)
-                # motko.train(True, True, 10000)
-                # motko.saveNN()
-                if(childthreads == self.maxtrainers):
-                    print("waiting trainers")
-                    for t in trainers:
-                        # print ('t.is_alive()', t.is_alive())
-                        t.join()
-                    childthreads = 0
-                self.hiddenlayer += 1
-                if (self.hiddenlayer > self.trainingmotkoamount):
-                    break
-
-        print ("waiting threads to finish")
-        for t in trainers:
-            # print ('t.is_alive()', t.is_alive())
-            t.join()
-
-        print ("creating and training NNs done")
-
-        self.hiddenlayer = self.hiddenlayerstart
-
-        motkoslist = os.listdir(os.path.join(self.cwd, 'brains'))
-        for k in range(len(motkoslist)):
-            motkoinstance = motko.motko(motkoslist[k], [self.width, self.height], self.hiddenlayer, loadfromfile=True, test=self.test)
-            self.motkot.append(motkoinstance)
-            if(len(self.motkot) >= self.motkotamount):
-                break
-
-        p = multiprocessing.Process(target=backroundtrainer, args=([self.width, self.height],))
-        p.start()
+        self.motkot = loadmotkos(self.cwd, self.motkotamount, self.trainingloops, [self.width, self.height], self.hiddenlayers, loadfromfile=True, test=self.test)
 
     def MainLoop(self):
         """This is the Main Loop of the Game"""
@@ -151,7 +85,7 @@ class PyManMain:
             self.background.fill((0, 0, 0))
         print ("mainloop testing %s motkos at same time" % (self.motkotamount))
         dontprintdata = True
-        step = True
+        last_steps = ""
         # deletemotkoindex = []
 
         while 1:
@@ -186,7 +120,9 @@ class PyManMain:
                 # print (self.motkot[k].returnname())
                 status = self.motkot[k].areyouallive()
                 if status[0] == "dood" or status[0] == "viable NN":
-                    print ("!:", self.motkot[k].returnname(), status, self.motkot[k].getliveinfo())
+                    last_steps = self.motkot[k].getliveinfo()
+                    # print ("!:", self.motkot[k].returnname(), status, self.motkot[k].getliveinfo())
+
                     # print (self.motkot[k].nn.inspect())
                     del self.motkot[k]
             textplaceY = 0
@@ -200,12 +136,8 @@ class PyManMain:
                         pygame.draw.rect(self.screen, [i * 2, i * 2, i * 2, ], [self.motkot[k].shadow[i][0], self.motkot[k].shadow[i][1], 5, 5], 0)
 
                 for i in range(len(self.foodblocks)):
-                    # print (self.motkot[k].X, self.motkot[k].Y)
                     if self.foodblocks[i].collision([self.motkot[k].X, self.motkot[k].Y], [5, 5]) == 1:
-                        # print ("motko soi", self.foodblocks[i].getinfo())
                         self.motkot[k].addfoodavail(self.foodblocks[i].returnfoodamount())
-                        # print ("eated2222", self.motkot[k].printEpilogue, self.foodblocks[i].returnfoodamount())
-                        # print("foodavail", self.motkot[k].printEpilogue, self.motkot[k].foodavail)
                         if(self.motkot[k].didoueat()):
                             del self.foodblocks[i]
                             tempplace = [random.randint(0, self.width), random.randint(0, self.height)]
@@ -222,9 +154,8 @@ class PyManMain:
                         self.motkot[k].turnright(self.foodblocks[i].returnfoodamount())
                         # print ("right hit!")
 
-                if (step):
-                    self.motkot[k].live(dontprintdata, False)
-                    # step = False
+                self.motkot[k].live(dontprintdata, False)
+
                 if(self.gamescreen):
                     pygame.draw.rect(self.screen, self.RED, [self.motkot[k].X, self.motkot[k].Y, 5, 5], 0)
                     pygame.draw.rect(self.screen, self.PURB, [self.motkot[k].eyeleftplace[0], self.motkot[k].eyeleftplace[1], self.motkot[k].eyesightleft[0], self.motkot[k].eyesightleft[1]], 1)
@@ -250,11 +181,13 @@ class PyManMain:
                 # print (self.sleeptime, delta.total_seconds(), (delta.total_seconds()/1000), delta, (self.sleeptime-(delta.total_seconds()/1000)))
                 # time.sleep(self.sleeptime-(delta.total_seconds()/1000))
                 # time.sleep(self.sleeptime)
-            if (self.hiddenlayer > self.trainingmotkoamount):
-                break
             if (len(self.motkot) == 0):
+                print ("last motko: ", last_steps[2], "trained:", last_steps[2].split('_')[1], "times, steps taken", last_steps[4])
+                self.trainingloops += 1
+                self.motkot = loadmotkos(self.cwd, self.motkotamount, self.trainingloops, [self.width, self.height], self.hiddenlayers, loadfromfile=True, test=self.test)
+
+            if(self.trainingloops > 100000):  # i think that is enought
                 break
-                # screen2 print one motko
 
 if __name__ == "__main__":
         MainWindow = PyManMain()
