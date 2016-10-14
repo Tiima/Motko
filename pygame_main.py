@@ -182,11 +182,15 @@ class PyManMain:
                 # time.sleep(self.sleeptime-(delta.total_seconds()/1000))
                 # time.sleep(self.sleeptime)
             if (len(self.motkot) == 0):
-                print ("last motko: ", last_steps[2], "trained:", last_steps[2].split('_')[1], "times, steps taken", last_steps[4])
+                if(last_steps != 0):
+                    print ("last motko: ", last_steps[2], "trained:", last_steps[2].split('_')[1], "times, steps taken", last_steps[4])
+                    last_steps = 0
                 self.trainingloops += 1
                 self.motkot = loadmotkos(self.cwd, self.motkotamount, self.trainingloops, [self.width, self.height], self.hiddenlayers, loadfromfile=True, test=self.test)
 
-            if(self.trainingloops > 100000):  # i think that is enought
+            if(self.trainingloops > 10000):  # i think that is enought
+                break
+            if(self.test and self.trainingloops > 1000):
                 break
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@ def motkotrainer(filename, size, hiddenlayer, Trainingloops, trainUntilConvergen
         motkoinstance.train()
         motkoinstance.saveNN()
     else:
-        for i in range(1, Trainingloops, 1):
+        for i in range(1, Trainingloops, 10):
             motkoinstance.trainloopamount(Trainingloops=i, printvalues=True)  # (10000*(hiddenneuron*hiddenlayer)))
             motkoinstance.saveNNwithname("%s_%d_%s" % (filename.split('_')[0], i, filename.split('_')[2]))
 
@@ -23,7 +23,7 @@ def trainmotkos(name, size, hiddenlayer, trainUntilConvergence=False, amount=10,
     maxtrainers = 3
     childthreads = 0
     print ("Training %d %ss with training loops %d" % (amount, name, Trainingloops))
-    for i in range(1, amount):
+    for i in range(1, amount + 1):
         p = multiprocessing.Process(target=motkotrainer, args=("%s_%d_%d.pkl" % (name, Trainingloops, i), [1024, 768], hiddenlayer, Trainingloops))
         trainers.append(p)
         p.start()
