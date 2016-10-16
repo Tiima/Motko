@@ -16,5 +16,4 @@ before_script:
   - mkdir brains
   - python motkotrainer.py test
 # command to run tests
-script:
-python pygame_main.py test
+script: python pygame_main.py test
