@@ -39,7 +39,7 @@ class PyManMain:
                 self.gamescreen = False
                 print ("setted", sys.argv[1], self.gamescreen)
                 self.test = True
-                self.motkotamount = 2
+                self.motkotamount = 3
         if(self.gamescreen):
             pygame.init()
         self.BLACK = (0, 0, 0)
