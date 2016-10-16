@@ -13,6 +13,7 @@ before_script:
   - cd pybrain
   - python setup.py install
   - cd ..
+  - mkdir brains
 # command to run tests
 script:
 python motkotrainer.py test
