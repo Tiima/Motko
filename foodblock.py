@@ -8,10 +8,20 @@ class foodblock:
         self.X = place[0]
         self.Y = place[1]
         self.size = size
-        self.foodamount = random.uniform(0.5, 0.99)
-        self.size[0] = self.size[0] + int(self.foodamount * 5)
-        self.size[1] = self.size[1] + int(self.foodamount * 5)
-        # TODO create color to the ffood
+        self.foodamount = random.uniform(0.1, 0.99)
+        self.size[0] = self.size[0] + int(self.foodamount * 6)
+        self.size[1] = self.size[1] + int(self.foodamount * 6)
+        self.RED = (255, 0, 0)
+        self.YELLOW = (255, 255, 255)
+        self.GREEN = (0, 255, 0)
+        self.BLUE = (0, 0, 255)
+        colors = []
+        colors.append(self.RED)
+        colors.append(self.YELLOW)
+        colors.append(self.GREEN)
+        colors.append(self.BLUE)
+        self.color = colors[random.randint(0, 3)]
+        # TODO create color to the food
 
     def collision(self, collider, collidersize):
         if (int(self.X) < int(collider[0]) + int(collidersize[0]) and int(self.X) + int(self.size[0]) > int(collider[0]) and int(self.Y) < int(collider[1]) + int(collidersize[1]) and int(self.size[1]) + int(self.Y) > int(collider[1])):

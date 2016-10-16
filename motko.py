@@ -135,7 +135,6 @@ class motko:
         for i in range(16):
             trainingsetup = format(i, '04b')
             trainingresult = self.gettraining([int(trainingsetup[0]), int(trainingsetup[1]), int(trainingsetup[2]), int(trainingsetup[3])])
-            # print ([int(trainingsetup[0]), int(trainingsetup[1]), int(trainingsetup[2]), int(trainingsetup[3])], trainingresult)
             self.ds.addSample((int(trainingsetup[0]), int(trainingsetup[1]), int(trainingsetup[2]), int(trainingsetup[3])),
                               (trainingresult[0], trainingresult[1], trainingresult[2], trainingresult[3]))
 
@@ -504,9 +503,10 @@ class motko:
         return roundedlist
 
     def getliveinfo(self):
-        time2 = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
-        diff = time2 - self.startime
-        return [round(self.foodamount, 4), round(self.speed, 4), self.filename, diff.total_seconds(), self.movecount]
+        # time2 = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
+        # diff = time2 - self.startime
+        return [round(self.foodamount, 4), self.filename.split('.')[0], self.movecount]
+        # return [round(self.foodamount, 4), round(self.speed, 4), self.filename, diff.total_seconds(), self.movecount]
 
     def areyouallive(self):
         time2 = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
@@ -565,54 +565,74 @@ class motko:
 
     def eat(self, inputs):
         # EAT energy, food avail, food left, food right, food color, color,
-        # will 1 if food energy is bellow 0,75 bit if more food avail in left or right then turn and go there
-        outputs = [1, 0, 0, 0, 0, 0]  # default response
+        outputs = [1, 0, 0, 0, 0]  # default response
         if(inputs[0] < 0.75):  # hungry
             if(inputs[1] < inputs[2] or inputs[4] == inputs[5]):  # food in left more than front and food color is different than in your color meaning eatable
                 outputs[0] = 0  # dont eat
                 outputs[1] = 0  # dont eat anything
                 outputs[2] = 1  # move
-                outputs[4] = 1  # turn left
-                outputs[5] = 0  # do not turn right
+                outputs[3] = 1  # turn left
+                outputs[4] = 0  # do not turn right
             elif(inputs[1] < inputs[3] or inputs[4] == inputs[5]):  # food in right more than front
                 outputs[0] = 0  # dont eat
                 outputs[1] = 0  # dont eat anything
                 outputs[2] = 1  # move
-                outputs[4] = 0  # do not turn left
-                outputs[5] = 1  # turn right
+                outputs[3] = 0  # do not turn left
+                outputs[4] = 1  # turn right
             elif(inputs[4] == inputs[5]):  # food is same color dont eat it will kill you
                 outputs[0] = 0  # dont eat
                 outputs[1] = 0  # dont eat anything
                 outputs[2] = 1  # move
-                outputs[4] = 1  # turn right we prefer left
-                outputs[5] = 0  # do not turn right
+                outputs[3] = 1  # turn right we prefer left
+                outputs[4] = 0  # do not turn right
             elif(inputs[4] != inputs[5]):  # food is different color than you, it is eatable
                 if((inputs[0] + inputs[1]) < 1.5):  # it is not too mutch
                     outputs[0] = 1  # dont eat
                     outputs[1] = inputs[1]  # eat all
                     outputs[2] = 1  # move
                     outputs[4] = 0  # turn right
-                    outputs[5] = 0  # do not turn right
-                    outputs[3] = 0.25  # slow down food front of you
+                    outputs[3] = 0  # do not turn right
+                    outputs[4] = 0.25  # slow down food front of you
                 else:
                     outputs[0] = 1  # dont eat
                     outputs[1] = (inputs[0] + inputs[1]) - 1  # dont eat anything
                     outputs[2] = 1  # move
-                    outputs[4] = 0  # turn right
-                    outputs[5] = 0  # do not turn right
+                    outputs[3] = 0  # turn right
+                    outputs[4] = 0  # do not turn right
         if(0.75 < inputs[0] <= 1):  # hungry)
-            outputs[3] = 0.25
+            outputs[2] = 0.25
         if(0.5 < inputs[0] <= 0.75):  # hungry)
-            outputs[3] = 0.50
+            outputs[2] = 0.50
         if(0.25 < inputs[0] <= 0.50):  # hungry)
-            outputs[3] = 0.75
+            outputs[2] = 0.75
         if(0.0 < inputs[0] <= 0.25):  # hungry)
-            outputs[3] = 0.75
-        return [0, 0, 0, 0, 0, 0]
+            outputs[2] = 0.75
+        if(0.0 > inputs[0]):  # hungry)
+            outputs[2] = 1.25
+        return outputs
+
+    def contact(self, inputs):
+        # if same color as you then sex or flee if different color flee or kill. by killing you get enegry what other has
+        outputs = [0, 0, 0]  # default response
+        if(inputs[5] == inputs[6]):  # same so flee or sex, energyamount defines what
+            if(inputs[0] > 0.50):  # enought food to sex
+                outputs[8] = inputs[0]
+            else:
+                outputs[7] = 1 - inputs[0]  # less amount food more fleeing
+        else:
+            if(inputs[0] > 0.50):  # enought food to flee
+                outputs[7] = inputs[0]
+            else:  # hungry so fight
+                inputs[6] = 1 - inputs[0]
+
+        return outputs
 
     def gettraining2(self, inputs):
-        # inputs are: energy, food avail, food left, food right, food color, color, meeting motko color,
-        # outputs are: eat, eat amount, move, speed, turn left, turn tight, kill, flee, sex
+        # inputs are: energy 0, food avail 1, food left 2, food right 3, food color 4, color 5, meeting motko color6,
+        # outputs are: eat 0, eat amount 1, move 2, speed 3, turn left 4, turn tight 5, kill 6, flee 7, sex 8
         # divide trainign to smaller parts
-        eatoutputs = eat(inputs)  # eat, eat amount, move, speed, turn left, turn tight
+        eatoutputs = eat(inputs)  # eat, eat amount, move, turn left, turn tight
         print (eatoutputs)
+        contactouputs = contact(inputs)
+        print (contactouputs)
+        return eatoutputs + contactouputs

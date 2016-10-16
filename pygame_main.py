@@ -10,12 +10,15 @@ import pygame
 def loadmotkos(path, amount, trainingloops, size, hiddenlayers, loadfromfile, test):
     loadedmotkos = []
     motkoslist = os.listdir(os.path.join(path, 'brains'))
+
     for k in range(len(motkoslist)):
         if(int(motkoslist[k].split('_')[1]) == trainingloops):
             motkoinstance = motko.motko(motkoslist[k], size, hiddenlayers, loadfromfile, test)
             loadedmotkos.append(motkoinstance)
             if(len(loadedmotkos) >= amount):
+
                 return loadedmotkos
+            print ("Loaded files with training loops %d" % trainingloops)
     return loadedmotkos
 
 
@@ -23,7 +26,7 @@ class PyManMain:
     """The Main PyMan Class - This class handles the main
     initialization and creating of the Game."""
 
-    def __init__(self, width=1024, height=768, foodamount=300, motkotamount=20):
+    def __init__(self, width=1024, height=768, foodamount=400, motkotamount=20):
         """Initialize"""
         self.gamescreen = True
         self.test = False
@@ -82,10 +85,10 @@ class PyManMain:
             pygame.key.set_repeat(500, 30)
             self.background = pygame.Surface(self.screen.get_size())
             self.background = self.background.convert()
-            self.background.fill((0, 0, 0))
+            self.background.fill((255, 255, 255))
         print ("mainloop testing %s motkos at same time" % (self.motkotamount))
         dontprintdata = True
-        last_steps = ""
+        last_steps = []
         # deletemotkoindex = []
 
         while 1:
@@ -131,9 +134,9 @@ class PyManMain:
                 # self.motkot[k].addfoodavail(0.001)
                 self.motkot[k].turnleft(0)
                 self.motkot[k].turnright(0)
-                for i in range(len(self.motkot[k].shadow) - 1, 0, -1):
-                    if(self.gamescreen):
-                        pygame.draw.rect(self.screen, [i * 2, i * 2, i * 2, ], [self.motkot[k].shadow[i][0], self.motkot[k].shadow[i][1], 5, 5], 0)
+                # for i in range(len(self.motkot[k].shadow)):
+                #    if(self.gamescreen):
+                #        pygame.draw.rect(self.screen, [255-(i * 2), 255-(i * 2), 255-(i * 2)], [self.motkot[k].shadow[i][0], self.motkot[k].shadow[i][1], 5, 5], 0)
 
                 for i in range(len(self.foodblocks)):
                     if self.foodblocks[i].collision([self.motkot[k].X, self.motkot[k].Y], [5, 5]) == 1:
@@ -146,7 +149,7 @@ class PyManMain:
                             self.foodblocks.append(newfb)
                     else:
                         if(self.gamescreen):
-                            pygame.draw.rect(self.screen, self.GREEN, [self.foodblocks[i].X, self.foodblocks[i].Y, self.foodblocks[i].size[0], self.foodblocks[i].size[1]], 0)
+                            pygame.draw.rect(self.screen, self.foodblocks[i].color, [self.foodblocks[i].X, self.foodblocks[i].Y, self.foodblocks[i].size[0], self.foodblocks[i].size[1]], 0)
                     if(self.foodblocks[i].collision([self.motkot[k].eyeleftplace[0], self.motkot[k].eyeleftplace[1]], self.motkot[k].eyesightleft) == 1):
                         self.motkot[k].turnleft(self.foodblocks[i].returnfoodamount())
                         # print ("left hit!")
@@ -158,11 +161,11 @@ class PyManMain:
 
                 if(self.gamescreen):
                     pygame.draw.rect(self.screen, self.RED, [self.motkot[k].X, self.motkot[k].Y, 5, 5], 0)
-                    pygame.draw.rect(self.screen, self.PURB, [self.motkot[k].eyeleftplace[0], self.motkot[k].eyeleftplace[1], self.motkot[k].eyesightleft[0], self.motkot[k].eyesightleft[1]], 1)
+                    pygame.draw.rect(self.screen, self.BLUE, [self.motkot[k].eyeleftplace[0], self.motkot[k].eyeleftplace[1], self.motkot[k].eyesightleft[0], self.motkot[k].eyesightleft[1]], 1)
                     pygame.draw.rect(self.screen, self.BLUE, [self.motkot[k].eyerightplace[0], self.motkot[k].eyerightplace[1], self.motkot[k].eyesightright[0], self.motkot[k].eyesightright[1]], 1)
                     # print (self.motkot[k].X, self.motkot[k].Y, self.motkot[k].eyeleft[0], self.motkot[k].eyeleft[1], self.motkot[k].eyesightleft[0], self.motkot[k].eyesightleft[1])
                     if (len(self.motkot) < 6):
-                        coretext = self.myfont.render(str(self.motkot[k].getliveinfo()), 1, (255, 255, 255), (0, 0, 0))
+                        coretext = self.myfont.render(str(self.motkot[k].getliveinfo()), 1, (0, 0, 0), (255, 255, 255))
                         self.screen.blit(coretext, (0, textplaceY))
                         textplaceY += 15
                 # else:
@@ -182,13 +185,13 @@ class PyManMain:
                 # time.sleep(self.sleeptime-(delta.total_seconds()/1000))
                 # time.sleep(self.sleeptime)
             if (len(self.motkot) == 0):
-                if(last_steps != 0):
-                    print ("last motko: ", last_steps[2], "trained:", last_steps[2].split('_')[1], "times, steps taken", last_steps[4])
-                    last_steps = 0
+                if(len(last_steps) > 2):
+                    print ("last motko: ", last_steps[1], "trained:", last_steps[1].split('_')[1], "times, steps taken", last_steps[2], last_steps[0])
+                    last_steps = []
                 self.trainingloops += 1
                 self.motkot = loadmotkos(self.cwd, self.motkotamount, self.trainingloops, [self.width, self.height], self.hiddenlayers, loadfromfile=True, test=self.test)
 
-            if(self.trainingloops > 10000):  # i think that is enought
+            if(self.trainingloops > 1000000):  # i think that is enought
                 break
             if(self.test and self.trainingloops > 1000):
                 break
