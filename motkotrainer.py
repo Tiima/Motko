@@ -56,4 +56,4 @@ if __name__ == "__main__":
             if("test" in sys.argv[1]):
                 trainmotkos("seppo", [1024, 768], 5, trainUntilConvergence=True, amount=3, Trainingloops=3, trainingamount=10000)
     else:
-        trainmotkos("seppo", [1024, 768], 5, trainUntilConvergence=True, amount=20, Trainingloops=10, trainingamount=10000)
+        trainmotkos("seppo", [1024, 768], 5, trainUntilConvergence=True, amount=10, Trainingloops=5, trainingamount=10000)

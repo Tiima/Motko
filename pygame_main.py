@@ -25,7 +25,7 @@ class PyManMain:
     """The Main PyMan Class - This class handles the main
     initialization and creating of the Game."""
 
-    def __init__(self, width=1024, height=768, foodamount=400, motkotamount=5):
+    def __init__(self, width=1024, height=768, foodamount=400, motkotamount=10):
         """Initialize"""
         self.gamescreen = True
         self.test = False
@@ -63,8 +63,8 @@ class PyManMain:
         self.foodblocks = []
         self.trainingloops = 1
         self.hiddenlayers = 4
+        # self.sleeptime = 0.1
 
-        self.sleeptime = 0.1
         if(self.gamescreen):
             self.screen = pygame.display.set_mode((self.width, self.height))
             self.screen2 = pygame.display.set_mode((self.width, self.height))
