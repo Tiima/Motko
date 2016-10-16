@@ -188,6 +188,7 @@ class motko:
             # self.trainer.train()
             self.trainer.trainUntilConvergence(validationProportion=0.2)
         print(self.trainer.train())
+        sys.stdout.flush()
 
     def trainloopamount(self, Trainingloops=1, printvalues=True):
         for i in range(Trainingloops - 1):
@@ -195,6 +196,7 @@ class motko:
             self.trainer.train()  # , self.nn.params)
 
         print(self.trainer.train())
+        sys.stdout.flush()
 
     def responce(self, liveinput):
         try:
@@ -267,8 +269,8 @@ class motko:
         self.eyerightplace = [] * 2
         self.eyerightplace.append(0)
         self.eyerightplace.append(1)
-        self.eyesightleft = [self.size, (self.size + 10)]
-        self.eyesightright = [self.size, (self.size + 10)]
+        self.eyesightsizeleft = [self.size, (self.size + 10)]
+        self.eyesightsizeright = [self.size, (self.size + 10)]
         self.seteyes()
         self.randmovevector()
 
@@ -284,60 +286,60 @@ class motko:
     def seteyes(self):
         if(self.directionvector[self.direction][0] >= 1 and self.directionvector[self.direction][1] == 0):
             self.eyeleftplace[0] = self.X + self.size
-            self.eyeleftplace[1] = self.Y - (self.size + 10)
+            self.eyeleftplace[1] = self.Y - (self.size + 15)
             self.eyerightplace[0] = self.X + self.size
-            self.eyerightplace[1] = self.Y + self.size
-            self.eyesightleft = [self.size, (self.size + 10)]
-            self.eyesightright = [self.size, (self.size + 10)]
+            self.eyerightplace[1] = self.Y + self.size + 5
+            self.eyesightsizeleft = [self.size, (self.size + 10)]
+            self.eyesightsizeright = [self.size, (self.size + 10)]
         elif(self.directionvector[self.direction][0] >= 1 and self.directionvector[self.direction][1] >= 1):
-            self.eyeleftplace[0] = self.X + self.size
+            self.eyeleftplace[0] = self.X + self.size + 5
             self.eyeleftplace[1] = self.Y
             self.eyerightplace[0] = self.X
-            self.eyerightplace[1] = self.Y + self.size
-            self.eyesightleft = [(self.size + 10), self.size]
-            self.eyesightright = [self.size, (self.size + 10)]
+            self.eyerightplace[1] = self.Y + self.size + 5
+            self.eyesightsizeleft = [(self.size + 10), self.size]
+            self.eyesightsizeright = [self.size, (self.size + 10)]
         elif(self.directionvector[self.direction][0] == 0 and self.directionvector[self.direction][1] >= 1):
-            self.eyeleftplace[0] = self.X + self.size
+            self.eyeleftplace[0] = self.X + self.size + 5
             self.eyeleftplace[1] = self.Y + self.size
-            self.eyerightplace[0] = self.X - (self.size + 10)
+            self.eyerightplace[0] = self.X - (self.size + 15)
             self.eyerightplace[1] = self.Y + self.size
-            self.eyesightleft = [(self.size + 10), self.size]
-            self.eyesightright = [(self.size + 10), self.size]
+            self.eyesightsizeleft = [(self.size + 10), self.size]
+            self.eyesightsizeright = [(self.size + 10), self.size]
         elif(self.directionvector[self.direction][0] <= -1 and self.directionvector[self.direction][1] >= 1):
             self.eyeleftplace[0] = self.X
-            self.eyeleftplace[1] = self.Y + self.size
-            self.eyerightplace[0] = self.X - (self.size + 10)
-            self.eyerightplace[1] = self.Y
-            self.eyesightleft = [self.size, (self.size + 10)]
-            self.eyesightright = [(self.size + 10), self.size]
+            self.eyeleftplace[1] = self.Y - (self.size + 15)
+            self.eyerightplace[0] = self.X
+            self.eyerightplace[1] = self.Y + self.size + 5
+            self.eyesightsizeleft = [self.size, (self.size + 10)]
+            self.eyesightsizeright = [(self.size + 10), self.size]
         elif(self.directionvector[self.direction][0] <= -1 and self.directionvector[self.direction][1] == 0):
             self.eyeleftplace[0] = self.X - self.size
-            self.eyeleftplace[1] = self.Y + self.size
+            self.eyeleftplace[1] = self.Y - (self.size + 15)
             self.eyerightplace[0] = self.X - self.size
-            self.eyerightplace[1] = self.Y - (self.size + 10)
-            self.eyesightleft = [self.size, (self.size + 10)]
-            self.eyesightright = [self.size, (self.size + 10)]
+            self.eyerightplace[1] = self.Y + self.size + 5
+            self.eyesightsizeleft = [self.size, (self.size + 10)]
+            self.eyesightsizeright = [self.size, (self.size + 10)]
         elif(self.directionvector[self.direction][0] <= -1 and self.directionvector[self.direction][1] <= -1):
             self.eyeleftplace[0] = self.X
-            self.eyeleftplace[1] = self.Y - (self.size + 10)
-            self.eyerightplace[0] = self.X - (self.size + 10)
+            self.eyeleftplace[1] = self.Y - 15
+            self.eyerightplace[0] = self.X - 15
             self.eyerightplace[1] = self.Y
-            self.eyesightleft = [self.size, (self.size + 10)]
-            self.eyesightright = [(self.size + 10), self.size]
+            self.eyesightsizeleft = [self.size, (self.size + 10)]
+            self.eyesightsizeright = [(self.size + 10), self.size]
         elif(self.directionvector[self.direction][0] == 0 and self.directionvector[self.direction][1] <= -1):
-            self.eyeleftplace[0] = self.X - (self.size + 10)
+            self.eyeleftplace[0] = self.X - (self.size + 15)
             self.eyeleftplace[1] = self.Y - self.size
-            self.eyerightplace[0] = self.X + self.size
+            self.eyerightplace[0] = self.X + (self.size + 5)
             self.eyerightplace[1] = self.Y - self.size
-            self.eyesightleft = [(self.size + 10), self.size]
-            self.eyesightright = [(self.size + 10), self.size]
+            self.eyesightsizeleft = [(self.size + 10), self.size]
+            self.eyesightsizeright = [(self.size + 10), self.size]
         elif(self.directionvector[self.direction][0] >= 1 and self.directionvector[self.direction][1] <= -1):
             self.eyeleftplace[0] = self.X
-            self.eyeleftplace[1] = self.Y - (self.size + 10)
-            self.eyerightplace[0] = self.X + self.size
+            self.eyeleftplace[1] = self.Y - (self.size + 15)
+            self.eyerightplace[0] = self.X + self.size + 5
             self.eyerightplace[1] = self.Y
-            self.eyesightleft = [self.size, (self.size + 10)]
-            self.eyesightright = [(self.size + 10), self.size]
+            self.eyesightsizeleft = [self.size, (self.size + 10)]
+            self.eyesightsizeright = [(self.size + 10), self.size]
 
     def reinit(self):
         print("%s reinit" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
