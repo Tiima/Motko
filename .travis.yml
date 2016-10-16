@@ -14,7 +14,7 @@ before_script:
   - python setup.py install
   - cd ..
   - mkdir brains
+  - python motkotrainer.py test
 # command to run tests
 script:
-python motkotrainer.py test
 python pygame_main.py test
