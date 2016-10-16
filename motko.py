@@ -18,6 +18,48 @@ Motko "tuo oman tiensa kulkia"
 """
 
 
+class motkowrapper:
+
+    def __init__(self, filename, eartsize, num_hiddeLayers, loadfromfile=False, test=False):
+
+        self.dontdelete = True
+        self.cwd = os.getcwd()
+        self.filename = filename
+
+        if(loadfromfile):
+            # print ("loading motko ",  self.filename)
+            self.motkolive = pickle.load(open(os.path.join(self.cwd, 'brains', self.filename), "rb"))
+            if(self.dontdelete is False):
+                os.remove(os.path.join(self.cwd, 'brains', self.filename))
+        else:
+            self.motkolive = motko(self.filename, eartsize, num_hiddeLayers, test)
+
+    def saveNN(self):
+        with open(os.path.join(self.cwd, 'brains', self.filename), 'wb') as output:
+            pickle.dump(self.motkolive, output, pickle.HIGHEST_PROTOCOL)
+        print ("%s saved" % (self.filename))
+
+    def saveNNwithname(self, name):
+        with open(os.path.join(self.cwd, 'brains', name), 'wb') as output:
+            pickle.dump(self.motkolive, output, pickle.HIGHEST_PROTOCOL)
+        print ("%s saved" % (name))
+
+    def saveViableNN(self):
+        with open(os.path.join(self.cwd, 'brains', (("%s.viable.pybrain_pkl") % (self.filename))), 'wb') as output:
+            pickle.dump(self.motkolive, output, pickle.HIGHEST_PROTOCOL)
+        print ("%s saved" % (self.filename))
+
+    def saveEaterNN(self):
+        with open(os.path.join(self.cwd, 'brains', (("%s.viable_eater.pybrain_pkl") % (self.filename))), 'wb') as output:
+            pickle.dump(self.motkolive, output, pickle.HIGHEST_PROTOCOL)
+        print ("%s saved" % (self.filename))
+
+    def saveNotViableNN(self):
+        with open(os.path.join(self.cwd, 'brains', (("%s.pkl_noviable") % (self.filename))), 'wb') as output:
+            pickle.dump(self.motkolive, output, pickle.HIGHEST_PROTOCOL)
+        print ("%s saved" % (self.filename))
+
+
 class motko:
 
     def gettraining(self, inputs):
@@ -142,9 +184,10 @@ class motko:
         self.trainer = BackpropTrainer(self.nn, self.ds)
 
     def train(self):
-        for i in range(100):
+        for i in range(1):
             # self.trainer.train()
             self.trainer.trainUntilConvergence(validationProportion=0.2)
+        print(self.trainer.train())
 
     def trainloopamount(self, Trainingloops=1, printvalues=True):
         for i in range(Trainingloops - 1):
@@ -171,7 +214,7 @@ class motko:
         except:
             print ("Unexpected error:", sys.exc_info())
 
-    def __init__(self, filename, eartsize, num_hiddeLayers, loadfromfile=False, test=False):
+    def __init__(self, filename, eartsize, num_hiddeLayers, test=False):
         self.cwd = os.getcwd()
         self.test = test
         self.filename = filename
@@ -180,14 +223,6 @@ class motko:
         self.eartsize = eartsize
         self.X = random.randint(0, eartsize[0])
         self.Y = random.randint(0, eartsize[1])
-        self.dontdelete = True
-        if(loadfromfile):
-            # print (self.filename)
-            self.nn = pickle.load(open(os.path.join(self.cwd, 'brains', self.filename), "rb"))
-            if(self.dontdelete is False):
-                os.remove(os.path.join(self.cwd, 'brains', self.filename))
-        else:
-            self.pybrain_init(hidden_layers=num_hiddeLayers)
         self.consumption = 0.05
         self.foodavail = 0
         self.shadow = []
@@ -293,64 +328,20 @@ class motko:
             self.eyesightright = [15, 5]
 
     def reinit(self):
-        if(self.dontdelete):
-            print("%s reinit" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
-            # self.pybrain_init(hidden_layers=random.randint(1, 40))
-            self.randmovevector()
-            self.seteyes()
-            # self.nn.randomize()
-            self.foodamount = 1
-            self.X = random.randint(0, self.eartsize[0])
-            self.Y = random.randint(0, self.eartsize[1])
-            self.shadow[:] = []
-            self.movecount = 0
-            self.movememory = []
-            # self.train()
-            self.startime = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
-            print("%s reinit done" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
-        else:
-            motkoslist = os.listdir(os.path.join(self.cwd, 'brains'))
-            for k in range(len(motkoslist)):
-                try:
-                    self.nn = pickle.load(open(os.path.join(self.cwd, 'brains', motkoslist[k]), "rb"))
-                    print("Load new motko %s" % (os.path.join(self.cwd, 'brains', motkoslist[k])))
-                    os.remove(os.path.join(self.cwd, 'brains', motkoslist[k]))
-                except:
-                    print ("Unexpected error:", sys.exc_info())
-            self.randmovevector()
-            self.seteyes()
-            self.foodamount = 1
-            self.X = random.randint(0, self.eartsize[0])
-            self.Y = random.randint(0, self.eartsize[1])
-            self.shadow[:] = []
-            self.movecount = 0
-            self.movememory = []
-            self.startime = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
-
-    def saveNN(self):
-        with open(os.path.join(self.cwd, 'brains', self.filename), 'wb') as output:
-            pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
-        print ("%s saved" % (self.filename))
-
-    def saveNNwithname(self, name):
-        with open(os.path.join(self.cwd, 'brains', name), 'wb') as output:
-            pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
-        print ("%s saved" % (name))
-
-    def saveViableNN(self):
-        with open(os.path.join(self.cwd, 'brains', (("%s.viable.pybrain_pkl") % (self.filename))), 'wb') as output:
-            pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
-        print ("%s saved" % (self.filename))
-
-    def saveEaterNN(self):
-        with open(os.path.join(self.cwd, 'brains', (("%s.viable_eater.pybrain_pkl") % (self.filename))), 'wb') as output:
-            pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
-        print ("%s saved" % (self.filename))
-
-    def saveNotViableNN(self):
-        with open(os.path.join(self.cwd, 'brains', (("%s.pkl_noviable") % (self.filename))), 'wb') as output:
-            pickle.dump(self.nn, output, pickle.HIGHEST_PROTOCOL)
-        print ("%s saved" % (self.filename))
+        print("%s reinit" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
+        # self.pybrain_init(hidden_layers=random.randint(1, 40))
+        self.randmovevector()
+        self.seteyes()
+        # self.nn.randomize()
+        self.foodamount = 1
+        self.X = random.randint(0, self.eartsize[0])
+        self.Y = random.randint(0, self.eartsize[1])
+        self.shadow[:] = []
+        self.movecount = 0
+        self.movememory = []
+        # self.train()
+        self.startime = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
+        print("%s reinit done" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
 
     def live(self, dontPrintInfo=False, Learning=True):
         if self.move != "exception dood":
@@ -531,15 +522,18 @@ class motko:
                         # self.reinit()
                         return ["dood"]
             elif(diff.total_seconds() > 900):
-                self.saveViableNN()
+                # self.saveViableNN()
                 # self.saveLog(self.filename, self.nn.inspectTofile(), 'a+')
                 return (["viable NN"])
             if(self.move == "exception dood"):
                 return (["dood", self.move])
             return ["ok"]
 
-    def returnname(self):
+    def getname(self):
         return self.filename
+
+    def setname(self, name):
+        self.filename = name
 
     def getinputaproximation(input):
         if(input <= 0.0):
