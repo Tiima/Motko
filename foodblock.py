@@ -12,12 +12,12 @@ class foodblock:
         self.size[0] = self.size[0] + int(self.foodamount * 6)
         self.size[1] = self.size[1] + int(self.foodamount * 6)
         self.RED = (255, 0, 0)
-        self.YELLOW = (255, 255, 255)
+        self.BLACK = (0, 0, 0)
         self.GREEN = (0, 255, 0)
         self.BLUE = (0, 0, 255)
         colors = []
         colors.append(self.RED)
-        colors.append(self.YELLOW)
+        colors.append(self.BLACK)
         colors.append(self.GREEN)
         colors.append(self.BLUE)
         self.color = colors[random.randint(0, 3)]

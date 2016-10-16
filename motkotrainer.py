@@ -30,7 +30,7 @@ def motkotrainer(filename, size, hiddenlayer, Trainingloops, trainingamount, tra
 def trainmotkos(name, size, hiddenlayer, trainUntilConvergence=False, amount=10, Trainingloops=100, trainingamount=100):
     trained = 0
     trainers = []
-    maxtrainers = 3
+    maxtrainers = 5
     childthreads = 0
     if(trainUntilConvergence):
         print ("Training %d %ss with trainUntilConvergence loops %d" % (amount, name, Trainingloops))
@@ -56,4 +56,4 @@ if __name__ == "__main__":
             if("test" in sys.argv[1]):
                 trainmotkos("seppo", [1024, 768], 5, trainUntilConvergence=True, amount=3, Trainingloops=3, trainingamount=10000)
     else:
-        trainmotkos("seppo", [1024, 768], 5, trainUntilConvergence=True, amount=20, Trainingloops=50, trainingamount=10000)
+        trainmotkos("seppo", [1024, 768], 5, trainUntilConvergence=True, amount=10, Trainingloops=100, trainingamount=10000)

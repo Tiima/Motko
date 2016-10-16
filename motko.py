@@ -223,7 +223,7 @@ class motko:
         self.eartsize = eartsize
         self.X = random.randint(0, eartsize[0])
         self.Y = random.randint(0, eartsize[1])
-        self.consumption = 0.05
+        self.consumption = 0.01
         self.foodavail = 0
         self.shadow = []
         self.shadowlength = 100
@@ -231,17 +231,24 @@ class motko:
         self.move = "moved"
         self.eaten = "full"
         self.speed = int(1)
-        self.foodInLeft = 0
-        self.eyeleftplace = [] * 2
-        self.eyeleftplace.append(0)
-        self.eyeleftplace.append(1)
-        self.foodInRight = 0
-        self.eyerightplace = [] * 2
-        self.eyerightplace.append(0)
-        self.eyerightplace.append(1)
-        self.eyesightleft = [5, 15]
-        self.eyesightright = [5, 15]
+
         # print (self.X, self.Y)
+        self.movecount = 0
+        self.movememory = []
+        self.trainsteps = 0
+        self.aftermovestrain = 100
+        self.randomcount = random.randint(5, 50)
+        self.RED = (255, 0, 0)
+        self.BLACK = (0, 0, 0)
+        self.GREEN = (0, 255, 0)
+        self.BLUE = (0, 0, 255)
+        colors = []
+        colors.append(self.RED)
+        colors.append(self.BLACK)
+        colors.append(self.GREEN)
+        colors.append(self.BLUE)
+        self.color = colors[random.randint(0, 3)]
+        self.size = (5 + int(self.foodamount * 6))
         self.direction = 0
         self.directionvector = [] * 8
         self.directionvector.append([1, 0])
@@ -252,13 +259,18 @@ class motko:
         self.directionvector.append([-1, -1])
         self.directionvector.append([0, -1])
         self.directionvector.append([1, -1])
+        self.foodInLeft = 0
+        self.eyeleftplace = [] * 2
+        self.eyeleftplace.append(0)
+        self.eyeleftplace.append(1)
+        self.foodInRight = 0
+        self.eyerightplace = [] * 2
+        self.eyerightplace.append(0)
+        self.eyerightplace.append(1)
+        self.eyesightleft = [self.size, (self.size + 10)]
+        self.eyesightright = [self.size, (self.size + 10)]
         self.seteyes()
         self.randmovevector()
-        self.movecount = 0
-        self.movememory = []
-        self.trainsteps = 0
-        self.aftermovestrain = 100
-        self.randomcount = random.randint(5, 50)
 
     def saveLog(self, filename, strinki, fileaut):
         target = open(filename, fileaut)
@@ -271,61 +283,61 @@ class motko:
 
     def seteyes(self):
         if(self.directionvector[self.direction][0] >= 1 and self.directionvector[self.direction][1] == 0):
-            self.eyeleftplace[0] = self.X + 5
-            self.eyeleftplace[1] = self.Y - 15
-            self.eyerightplace[0] = self.X + 5
-            self.eyerightplace[1] = self.Y + 5
-            self.eyesightleft = [5, 15]
-            self.eyesightright = [5, 15]
+            self.eyeleftplace[0] = self.X + self.size
+            self.eyeleftplace[1] = self.Y - (self.size + 10)
+            self.eyerightplace[0] = self.X + self.size
+            self.eyerightplace[1] = self.Y + self.size
+            self.eyesightleft = [self.size, (self.size + 10)]
+            self.eyesightright = [self.size, (self.size + 10)]
         elif(self.directionvector[self.direction][0] >= 1 and self.directionvector[self.direction][1] >= 1):
-            self.eyeleftplace[0] = self.X + 5
+            self.eyeleftplace[0] = self.X + self.size
             self.eyeleftplace[1] = self.Y
             self.eyerightplace[0] = self.X
-            self.eyerightplace[1] = self.Y + 5
-            self.eyesightleft = [15, 5]
-            self.eyesightright = [5, 15]
+            self.eyerightplace[1] = self.Y + self.size
+            self.eyesightleft = [(self.size + 10), self.size]
+            self.eyesightright = [self.size, (self.size + 10)]
         elif(self.directionvector[self.direction][0] == 0 and self.directionvector[self.direction][1] >= 1):
-            self.eyeleftplace[0] = self.X + 5
-            self.eyeleftplace[1] = self.Y + 5
-            self.eyerightplace[0] = self.X - 15
-            self.eyerightplace[1] = self.Y + 5
-            self.eyesightleft = [15, 5]
-            self.eyesightright = [15, 5]
+            self.eyeleftplace[0] = self.X + self.size
+            self.eyeleftplace[1] = self.Y + self.size
+            self.eyerightplace[0] = self.X - (self.size + 10)
+            self.eyerightplace[1] = self.Y + self.size
+            self.eyesightleft = [(self.size + 10), self.size]
+            self.eyesightright = [(self.size + 10), self.size]
         elif(self.directionvector[self.direction][0] <= -1 and self.directionvector[self.direction][1] >= 1):
             self.eyeleftplace[0] = self.X
-            self.eyeleftplace[1] = self.Y + 5
-            self.eyerightplace[0] = self.X - 15
+            self.eyeleftplace[1] = self.Y + self.size
+            self.eyerightplace[0] = self.X - (self.size + 10)
             self.eyerightplace[1] = self.Y
-            self.eyesightleft = [5, 15]
-            self.eyesightright = [15, 5]
+            self.eyesightleft = [self.size, (self.size + 10)]
+            self.eyesightright = [(self.size + 10), self.size]
         elif(self.directionvector[self.direction][0] <= -1 and self.directionvector[self.direction][1] == 0):
-            self.eyeleftplace[0] = self.X - 5
-            self.eyeleftplace[1] = self.Y + 5
-            self.eyerightplace[0] = self.X - 5
-            self.eyerightplace[1] = self.Y - 15
-            self.eyesightleft = [5, 15]
-            self.eyesightright = [5, 15]
+            self.eyeleftplace[0] = self.X - self.size
+            self.eyeleftplace[1] = self.Y + self.size
+            self.eyerightplace[0] = self.X - self.size
+            self.eyerightplace[1] = self.Y - (self.size + 10)
+            self.eyesightleft = [self.size, (self.size + 10)]
+            self.eyesightright = [self.size, (self.size + 10)]
         elif(self.directionvector[self.direction][0] <= -1 and self.directionvector[self.direction][1] <= -1):
             self.eyeleftplace[0] = self.X
-            self.eyeleftplace[1] = self.Y - 15
-            self.eyerightplace[0] = self.X - 15
+            self.eyeleftplace[1] = self.Y - (self.size + 10)
+            self.eyerightplace[0] = self.X - (self.size + 10)
             self.eyerightplace[1] = self.Y
-            self.eyesightleft = [5, 15]
-            self.eyesightright = [15, 5]
+            self.eyesightleft = [self.size, (self.size + 10)]
+            self.eyesightright = [(self.size + 10), self.size]
         elif(self.directionvector[self.direction][0] == 0 and self.directionvector[self.direction][1] <= -1):
-            self.eyeleftplace[0] = self.X - 15
-            self.eyeleftplace[1] = self.Y - 5
-            self.eyerightplace[0] = self.X + 5
-            self.eyerightplace[1] = self.Y - 5
-            self.eyesightleft = [15, 5]
-            self.eyesightright = [15, 5]
+            self.eyeleftplace[0] = self.X - (self.size + 10)
+            self.eyeleftplace[1] = self.Y - self.size
+            self.eyerightplace[0] = self.X + self.size
+            self.eyerightplace[1] = self.Y - self.size
+            self.eyesightleft = [(self.size + 10), self.size]
+            self.eyesightright = [(self.size + 10), self.size]
         elif(self.directionvector[self.direction][0] >= 1 and self.directionvector[self.direction][1] <= -1):
             self.eyeleftplace[0] = self.X
-            self.eyeleftplace[1] = self.Y - 15
-            self.eyerightplace[0] = self.X + 5
+            self.eyeleftplace[1] = self.Y - (self.size + 10)
+            self.eyerightplace[0] = self.X + self.size
             self.eyerightplace[1] = self.Y
-            self.eyesightleft = [5, 15]
-            self.eyesightright = [15, 5]
+            self.eyesightleft = [self.size, (self.size + 10)]
+            self.eyesightright = [(self.size + 10), self.size]
 
     def reinit(self):
         print("%s reinit" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
@@ -386,11 +398,18 @@ class motko:
                     # print("ei syoty")
 
                 # self.foodamount = self.foodamount - self.consumption + (self.foodavail)  # - (neuraloutputs[1]/5)
+                # set size based on energy
+                if(self.foodamount < 0):
+                    self.size = 2
+                else:
+                    self.size = int(self.foodamount * 6)
+                    if(self.size < 2):
+                        self.size = 2
 
                 if(round(neuraloutputs[1], 0) == 1):
                     if(self.directionvector[self.direction][0] == 0 and self.directionvector[self.direction][1] == 0):
                         self.randmovevector()
-                    self.speed = neuraloutputs[1] * 7
+                    self.speed = neuraloutputs[1] * 3
                     self.X += self.directionvector[self.direction][0] * int(self.speed)
                     self.Y += self.directionvector[self.direction][1] * int(self.speed)
                     self.move = "moved"

@@ -14,7 +14,7 @@ def loadmotkos(path, amount, trainingloops, size, hiddenlayers, loadfromfile, te
     for k in range(len(motkoslist)):
         if(int(motkoslist[k].split('_')[1]) == trainingloops):
             motkoinstance = motko.motkowrapper(motkoslist[k], size, hiddenlayers, loadfromfile, test)
-            # print("loading motko ", motkoinstance.motkolive.getname(), "filename ", motkoslist[k])
+            print("loading motko", motkoinstance.motkolive.getname())
             loadedmotkos.append(motkoinstance)
             if(len(loadedmotkos) >= amount):
                 return loadedmotkos
@@ -25,7 +25,7 @@ class PyManMain:
     """The Main PyMan Class - This class handles the main
     initialization and creating of the Game."""
 
-    def __init__(self, width=1024, height=768, foodamount=400, motkotamount=20):
+    def __init__(self, width=1024, height=768, foodamount=400, motkotamount=10):
         """Initialize"""
         self.gamescreen = True
         self.test = False
@@ -138,7 +138,7 @@ class PyManMain:
                 #        pygame.draw.rect(self.screen, [255-(i * 2), 255-(i * 2), 255-(i * 2)], [self.motkot[k].motkolive.shadow[i][0], self.motkot[k].motkolive.shadow[i][1], 5, 5], 0)
 
                 for i in range(len(self.foodblocks)):
-                    if self.foodblocks[i].collision([self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y], [5, 5]) == 1:
+                    if self.foodblocks[i].collision([self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y], [self.motkot[k].motkolive.size, self.motkot[k].motkolive.size]) == 1:
                         self.motkot[k].motkolive.addfoodavail(self.foodblocks[i].returnfoodamount())
                         if(self.motkot[k].motkolive.didoueat()):
                             del self.foodblocks[i]
@@ -159,9 +159,9 @@ class PyManMain:
                 self.motkot[k].motkolive.live(dontprintdata, False)
 
                 if(self.gamescreen):
-                    pygame.draw.rect(self.screen, self.RED, [self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y, 5, 5], 0)
-                    pygame.draw.rect(self.screen, self.BLUE, [self.motkot[k].motkolive.eyeleftplace[0], self.motkot[k].motkolive.eyeleftplace[1], self.motkot[k].motkolive.eyesightleft[0], self.motkot[k].motkolive.eyesightleft[1]], 1)
-                    pygame.draw.rect(self.screen, self.BLUE, [self.motkot[k].motkolive.eyerightplace[0], self.motkot[k].motkolive.eyerightplace[1], self.motkot[k].motkolive.eyesightright[0], self.motkot[k].motkolive.eyesightright[1]], 1)
+                    pygame.draw.rect(self.screen, self.motkot[k].motkolive.color, [self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y, self.motkot[k].motkolive.size, self.motkot[k].motkolive.size], 0)
+                    pygame.draw.rect(self.screen, self.motkot[k].motkolive.color, [self.motkot[k].motkolive.eyeleftplace[0], self.motkot[k].motkolive.eyeleftplace[1], self.motkot[k].motkolive.eyesightleft[0], self.motkot[k].motkolive.eyesightleft[1]], 1)
+                    pygame.draw.rect(self.screen, self.motkot[k].motkolive.color, [self.motkot[k].motkolive.eyerightplace[0], self.motkot[k].motkolive.eyerightplace[1], self.motkot[k].motkolive.eyesightright[0], self.motkot[k].motkolive.eyesightright[1]], 1)
                     # print (self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y, self.motkot[k].motkolive.eyeleft[0], self.motkot[k].motkolive.eyeleft[1], self.motkot[k].motkolive.eyesightleft[0], self.motkot[k].motkolive.eyesightleft[1])
                     if (len(self.motkot) < 6):
                         coretext = self.myfont.render(str(self.motkot[k].motkolive.getliveinfo()), 1, (0, 0, 0), (255, 255, 255))
