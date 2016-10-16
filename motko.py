@@ -27,7 +27,6 @@ class motkowrapper:
         self.filename = filename
 
         if(loadfromfile):
-            # print ("loading motko ",  self.filename)
             self.motkolive = pickle.load(open(os.path.join(self.cwd, 'brains', self.filename), "rb"))
             if(self.dontdelete is False):
                 os.remove(os.path.join(self.cwd, 'brains', self.filename))
@@ -180,11 +179,11 @@ class motko:
             self.ds.addSample((int(trainingsetup[0]), int(trainingsetup[1]), int(trainingsetup[2]), int(trainingsetup[3])),
                               (trainingresult[0], trainingresult[1], trainingresult[2], trainingresult[3]))
 
-        self.nn = buildNetwork(4, 5, 4, bias=True, hiddenclass=TanhLayer)
+        self.nn = buildNetwork(input_amount, hidden_layers, output_amount, bias=True, hiddenclass=TanhLayer)
         self.trainer = BackpropTrainer(self.nn, self.ds)
 
     def train(self):
-        for i in range(1):
+        for i in range(10):
             # self.trainer.train()
             self.trainer.trainUntilConvergence(validationProportion=0.2)
         print(self.trainer.train())

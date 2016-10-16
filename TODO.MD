@@ -2,3 +2,4 @@
 - [ ] Rewrite mainloop it contains ideas long passed
 - [ ] Change input output values to float
 - [ ] Add more input variables
+- [ ] add logger

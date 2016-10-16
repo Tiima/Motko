@@ -25,7 +25,7 @@ class PyManMain:
     """The Main PyMan Class - This class handles the main
     initialization and creating of the Game."""
 
-    def __init__(self, width=1024, height=768, foodamount=400, motkotamount=10):
+    def __init__(self, width=1024, height=768, foodamount=400, motkotamount=20):
         """Initialize"""
         self.gamescreen = True
         self.test = False
@@ -133,9 +133,9 @@ class PyManMain:
                 # self.motkot[k].motkolive.addfoodavail(0.001)
                 self.motkot[k].motkolive.turnleft(0)
                 self.motkot[k].motkolive.turnright(0)
-                # for i in range(len(self.motkot[k].motkolive.shadow)):
-                #    if(self.gamescreen):
-                #        pygame.draw.rect(self.screen, [255-(i * 2), 255-(i * 2), 255-(i * 2)], [self.motkot[k].motkolive.shadow[i][0], self.motkot[k].motkolive.shadow[i][1], 5, 5], 0)
+                for i in range(len(self.motkot[k].motkolive.shadow)):
+                    if(self.gamescreen):
+                        pygame.draw.rect(self.screen, [255 - (i * 2), 255 - (i * 2), 255 - (i * 2)], [self.motkot[k].motkolive.shadow[i][0], self.motkot[k].motkolive.shadow[i][1], 2, 2], 0)
 
                 for i in range(len(self.foodblocks)):
                     if self.foodblocks[i].collision([self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y], [self.motkot[k].motkolive.size, self.motkot[k].motkolive.size]) == 1:
