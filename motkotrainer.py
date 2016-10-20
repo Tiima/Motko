@@ -20,6 +20,7 @@ def motkotrainer(filename, size, hiddenlayer, Trainingloops, trainingamount, tra
             for _ in range(Trainingloops):
                 loopstrained += 1
                 motkoinstance.motkolive.setname("%s_%d_%s" % (filename.split('_')[0], (loopstrained * 10), filename.split('_')[2]))
+                motkoinstance.motkolive.TrainerCreateTrainingset()
                 motkoinstance.trainfromfileds(trainingamount, trainUntilConvergence)
                 # motkoinstance.motkolive.trainerTrainUntilConvergence()
                 # motkoinstance.motkolive.saveDS()
@@ -29,8 +30,8 @@ def motkotrainer(filename, size, hiddenlayer, Trainingloops, trainingamount, tra
             loopstrained += trainingamount
             print (loopstrained, trainingamount)
             motkoinstance.motkolive.setname("%s_%d_%s" % (filename.split('_')[0], (loopstrained * 10), filename.split('_')[2]))
-            # motkoinstance.trainfromfileds(1, trainUntilConvergence)
-            motkoinstance.motkolive.trainloopamount(trainingamount)
+            motkoinstance.motkolive.TrainerCreateTrainingset()
+            motkoinstance.trainfromfileds(trainingamount)
             # motkoinstance.saveNNwithname("%s_%d_%s" % (filename.split('_')[0], loopstrained, filename.split('_')[2]))
             motkoinstance.saveNNwithname(filename)
     del motkoinstance

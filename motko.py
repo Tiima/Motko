@@ -38,7 +38,7 @@ class motkowrapper:
 
     @timing_function
     def trainfromfileds(self, loops, trainUntilConvergence=False):
-        self.motkolive.trainfromfileds(SupervisedDataSet.loadFromFile("ds_save_seppoConverge_10_1.pkl_156250.ds"), loops, trainUntilConvergence)
+        self.motkolive.trainfromfileds(SupervisedDataSet.loadFromFile("basic_trainingset.ds"), loops, trainUntilConvergence)
 
     @timing_function
     def checkerror(self):
@@ -92,6 +92,22 @@ class motko:
         self.trainer = BackpropTrainer(self.nn, self.ds)
 
     @timing_function
+    def TrainerCreateTrainingset(self):
+        print("starting to create trainignset")
+        sys.stdout.flush()
+        for e in range(1, 11, 2):
+            for fa in range(1, 11, 2):
+                for fl in range(1, 11, 2):
+                    for fr in range(1, 11, 2):
+                        for fc in range(5):
+                            for c in range(5):
+                                for mtc in range(5):
+                                    # print("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])))))
+                                    self.ds.addSample([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc], self.gettraining2([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc]))
+        self.saveDS("basic_trainingset.ds")
+        print("Create trainignset done")
+
+    @timing_function
     def trainerTrainUntilConvergence(self):
         for i in range(1):
             print("before", self.trainer.train())
@@ -131,8 +147,8 @@ class motko:
                 sys.stdout.flush()
 
     @timing_function
-    def saveDS(self):
-        self.ds.saveToFile("ds_save_%s_%d.ds" % (self.filename, len(self.ds)))
+    def saveDS(self, DSFilename):
+        self.ds.saveToFile(DSFilename)
 
     @timing_function
     def responce(self, liveinput):
