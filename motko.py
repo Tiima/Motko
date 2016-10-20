@@ -95,7 +95,7 @@ class motko:
     def TrainerCreateTrainingset(self):
         self.printlog("starting to create trainignset")
         sys.stdout.flush()
-        for e in range(1, 11, 2):
+        for e in range(1, 11):
             for fa in range(1, 11, 2):
                 for fl in range(1, 11, 2):
                     for fr in range(1, 11, 2):
@@ -155,10 +155,8 @@ class motko:
         trainingresult = self.gettraining2(liveinput)
         self.ds.addSample(liveinput, trainingresult)
         # self.printlog("%s: %s: %s" % (" ".join(str(x) for x in self.roundfloat(liveinput)), " ".join(str(x) for x in self.roundfloat(trainingresult)), " ".join(str(x) for x in self.roundfloat(self.nn.activate(liveinput)))))
-
         if(self.trainsteps == self.aftermovestrain):
             self.trainer = BackpropTrainer(self.nn, self.ds)
-            self.trainer.train()
             # self.trainer.trainEpochs(1)
             # self.currenterror = self.trainer.train()
             # self.printlog("trainUntilConvergence1: %s" % (self.currenterror))
@@ -186,7 +184,7 @@ class motko:
     @timing_function
     def __init__(self, filename, eartsize, num_hiddeLayers, test=False):
         logging.basicConfig(filename="motkot.log", format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
-        logging.error("motkot start")
+        logging.info("motkot start")
         self.cwd = os.getcwd()
         self.test = test
         self.filename = filename
@@ -232,7 +230,7 @@ class motko:
         self.movecount = 0
         self.movememory = []
         self.trainsteps = 0
-        self.aftermovestrain = 50000
+        self.aftermovestrain = 5000
         self.randomcount = random.randint(5, 50)
 
         self.size = (5 + int(self.energy * 6))
