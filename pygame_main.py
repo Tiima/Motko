@@ -30,7 +30,7 @@ class PyManMain:
         """Initialize"""
         self.cwd = os.getcwd()
         logging.basicConfig(filename=os.path.join(self.cwd, "pygame_main.log"), filemode='w', level=logging.INFO)
-        logging.error("start main")
+        logging.info("start main")
         self.gamescreen = True
         self.test = False
         self.motkotamount = motkotamount
