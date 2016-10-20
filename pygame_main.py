@@ -5,6 +5,7 @@ import foodblock
 import random
 import motko
 import pygame
+import logging
 
 
 def loadmotkos(path, amount, trainingloops, size, hiddenlayers, loadfromfile, test):
@@ -25,8 +26,11 @@ class PyManMain:
     """The Main PyMan Class - This class handles the main
     initialization and creating of the Game."""
 
-    def __init__(self, width=1024, height=768, foodamount=400, motkotamount=20):
+    def __init__(self, width=1024, height=768, foodamount=400, motkotamount=3):
         """Initialize"""
+        self.cwd = os.getcwd()
+        logging.basicConfig(filename=os.path.join(self.cwd, "pygame_main.log"), filemode='w', level=logging.INFO)
+        logging.error("start main")
         self.gamescreen = True
         self.test = False
         self.motkotamount = motkotamount
@@ -34,7 +38,6 @@ class PyManMain:
             if("no" in sys.argv[1]):
                 self.gamescreen = False
                 print ("setted", sys.argv[1], self.gamescreen)
-                self.motkotamount = 1
             elif("test" in sys.argv[1]):
                 self.gamescreen = False
                 print ("setted", sys.argv[1], self.gamescreen)
@@ -108,11 +111,11 @@ class PyManMain:
                             self.sleeptime += 0.01
                             print (self.sleeptime)
                         elif (event.key == pygame.K_DOWN):
-                            if(self.sleeptime <= 0.01):
-                                self.sleeptime = 0.01
-                            else:
-                                self.sleeptime -= 0.01
-                            print (self.sleeptime)
+                            # if(self.sleeptime <= 0.01):
+                            #    self.sleeptime = 0.01
+                            # else:
+                            #    self.sleeptime -= 0.01
+                            print ("slooptime")
                             # if(step == True):
                             #     step = False
                             # else:
@@ -123,40 +126,44 @@ class PyManMain:
                 status = self.motkot[k].motkolive.areyouallive()
                 if status[0] == "dood" or status[0] == "viable NN":
                     last_steps = self.motkot[k].motkolive.getliveinfo()
-                    # print ("!:", self.motkot[k].motkolive.getname(), status, self.motkot[k].motkolive.getliveinfo())
-
+                    print ("!:", self.motkot[k].motkolive.getname(), status, self.motkot[k].motkolive.getliveinfo())
                     # print (self.motkot[k].motkolive.nn.inspect())
                     del self.motkot[k]
+                # for i in range(len(self.motkot) - 1, -1, -1):
+                #    if self.foodblocks[i].collision([self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y], [self.motkot[k].motkolive.size, self.motkot[k].motkolive.size]) == 1:
             textplaceY = 0
 
             for k in range(len(self.motkot)):
                 # self.motkot[k].motkolive.addfoodavail(0.001)
-                self.motkot[k].motkolive.turnleft(0)
-                self.motkot[k].motkolive.turnright(0)
                 for i in range(len(self.motkot[k].motkolive.shadow)):
                     if(self.gamescreen):
                         pygame.draw.rect(self.screen, [255 - (i * 2), 255 - (i * 2), 255 - (i * 2)], [self.motkot[k].motkolive.shadow[i][0], self.motkot[k].motkolive.shadow[i][1], 2, 2], 0)
-
+                # print ("check food bloks")
                 for i in range(len(self.foodblocks)):
                     if self.foodblocks[i].collision([self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y], [self.motkot[k].motkolive.size, self.motkot[k].motkolive.size]) == 1:
-                        self.motkot[k].motkolive.addfoodavail(self.foodblocks[i].returnfoodamount())
-                        if(self.motkot[k].motkolive.didoueat()):
-                            del self.foodblocks[i]
-                            tempplace = [random.randint(0, self.width), random.randint(0, self.height)]
-                            newfb = foodblock.foodblock(tempplace, [2, 2])
-                            # print (newfb.getinfo())
-                            self.foodblocks.append(newfb)
+                        self.motkot[k].motkolive.addfoodavail(self.foodblocks[i].returnfoodamount(), self.foodblocks[i].colornumber)
+                        if(self.motkot[k].motkolive.didoueat() > 0):
+                            # print ("self.foodblocks[i].foodamount1", self.foodblocks[i].foodamount, self.motkot[k].motkolive.didoueat())
+                            self.foodblocks[i].foodamount = self.foodblocks[i].foodamount - self.motkot[k].motkolive.didoueat()
+                            if (self.foodblocks[i].foodamount < 0):
+                                # print ("self.foodblocks[i].foodamount2", self.foodblocks[i].foodamount, self.motkot[k].motkolive.didoueat())
+                                del self.foodblocks[i]
+                                tempplace = [random.randint(0, self.width), random.randint(0, self.height)]
+                                newfb = foodblock.foodblock(tempplace, [2, 2])
+                                # print (newfb.getinfo())
+                                self.foodblocks.append(newfb)
                     else:
                         if(self.gamescreen):
                             pygame.draw.rect(self.screen, self.foodblocks[i].color, [self.foodblocks[i].X, self.foodblocks[i].Y, self.foodblocks[i].size[0], self.foodblocks[i].size[1]], 0)
                     if(self.foodblocks[i].collision([self.motkot[k].motkolive.eyeleftplace[0], self.motkot[k].motkolive.eyeleftplace[1]], self.motkot[k].motkolive.eyesightsizeleft) == 1):
-                        self.motkot[k].motkolive.turnleft(self.foodblocks[i].returnfoodamount())
+                        self.motkot[k].motkolive.foodleft(self.foodblocks[i].returnfoodamount())
                         # print ("left hit!")
                     if(self.foodblocks[i].collision([self.motkot[k].motkolive.eyerightplace[0], self.motkot[k].motkolive.eyerightplace[1]], self.motkot[k].motkolive.eyesightsizeright) == 1):
-                        self.motkot[k].motkolive.turnright(self.foodblocks[i].returnfoodamount())
+                        self.motkot[k].motkolive.foodright(self.foodblocks[i].returnfoodamount())
                         # print ("right hit!")
-
+                # print ("motkolive")
                 self.motkot[k].motkolive.live(dontprintdata, False)
+                # self.motkot[k].checkerror()
 
                 if(self.gamescreen):
                     pygame.draw.rect(self.screen, self.motkot[k].motkolive.color, [self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y, self.motkot[k].motkolive.size, self.motkot[k].motkolive.size], 0)

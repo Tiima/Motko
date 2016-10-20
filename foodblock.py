@@ -8,7 +8,7 @@ class foodblock:
         self.X = place[0]
         self.Y = place[1]
         self.size = size
-        self.foodamount = random.uniform(0.1, 0.99)
+        self.foodamount = random.random()
         self.size[0] = self.size[0] + int(self.foodamount * 6)
         self.size[1] = self.size[1] + int(self.foodamount * 6)
         self.RED = (255, 0, 0)
@@ -20,7 +20,8 @@ class foodblock:
         colors.append(self.BLACK)
         colors.append(self.GREEN)
         colors.append(self.BLUE)
-        self.color = colors[random.randint(0, 3)]
+        self.colornumber = random.randint(0, 3)
+        self.color = colors[self.colornumber]
         # TODO create color to the food
 
     def collision(self, collider, collidersize):
