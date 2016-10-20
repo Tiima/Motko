@@ -24,7 +24,7 @@ class motkowrapper:
     @timing_function
     def __init__(self, filename, eartsize, num_hiddeLayers, loadfromfile=False, test=False):
         logging.basicConfig(filename="motkowrapper.log", format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
-        logging.error("motkowrapper start")
+        logging.info("motkowrapper start")
         self.dontdelete = True
         self.cwd = os.getcwd()
         self.filename = filename
@@ -127,7 +127,7 @@ class motko:
 
     @timing_function
     def trainfromfileds(self, fileds, loops=10, trainUntilConvergence=False):
-        self.printlog("starting training", len(fileds))
+        self.printlog("starting training {}".format(len(fileds)))
         sys.stdout.flush()
         filedstrainer = BackpropTrainer(self.nn, fileds)
         self.printlog("Loading trainer done")
