@@ -1,5 +1,5 @@
 import time
-# import logging
+import logging
 
 
 def timing_function(func):
