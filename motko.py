@@ -93,7 +93,7 @@ class motko:
 
     @timing_function
     def TrainerCreateTrainingset(self):
-        print("starting to create trainignset")
+        printlog("starting to create trainignset")
         sys.stdout.flush()
         for e in range(1, 11, 2):
             for fa in range(1, 11, 2):
@@ -102,18 +102,18 @@ class motko:
                         for fc in range(5):
                             for c in range(5):
                                 for mtc in range(5):
-                                    # print("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])))))
+                                    # printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])))))
                                     self.ds.addSample([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc], self.gettraining2([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc]))
         self.saveDS("basic_trainingset.ds")
-        print("Create trainignset done")
+        printlog("Create trainignset done")
 
     @timing_function
     def trainerTrainUntilConvergence(self):
         for i in range(1):
-            print("before", self.trainer.train())
+            printlog("before", self.trainer.train())
             sys.stdout.flush()
             self.trainer.trainUntilConvergence(validationProportion=0.2)
-        print("after", self.trainer.train())
+        printlog("after", self.trainer.train())
         sys.stdout.flush()
 
     @timing_function
@@ -122,26 +122,26 @@ class motko:
             # self.trainer.train()
             self.trainer.train()  # , self.nn.params)
 
-        print(self.trainer.train())
+        printlog(self.trainer.train())
         sys.stdout.flush()
 
     @timing_function
     def trainfromfileds(self, fileds, loops=10, trainUntilConvergence=False):
-        print("starting training", len(fileds))
+        printlog("starting training", len(fileds))
         sys.stdout.flush()
         filedstrainer = BackpropTrainer(self.nn, fileds)
-        print("Loading trainer done")
+        printlog("Loading trainer done")
         sys.stdout.flush()
         if(trainUntilConvergence):
-            print("starting trainUntilConvergence {} loops".format(loops))
+            printlog("starting trainUntilConvergence {} loops".format(loops))
             for i in range(loops):
-                print("loop {} before {}".format(i, filedstrainer.train()))
+                printlog("loop {} before {}".format(i, filedstrainer.train()))
                 sys.stdout.flush()
                 filedstrainer.trainUntilConvergence(validationProportion=0.2)
-                print("loop {} after {}".format(i, filedstrainer.train()))
+                printlog("loop {} after {}".format(i, filedstrainer.train()))
                 sys.stdout.flush()
         else:
-            print("starting training {} loops".format(loops))
+            printlog("starting training {} loops".format(loops))
             for i in range(loops):
                 self.printlog(filedstrainer.train())
                 sys.stdout.flush()
@@ -332,7 +332,7 @@ class motko:
 
     @timing_function
     def reinit(self):
-        print("%s reinit" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
+        printlog("%s reinit" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
         # self.pybrain_init(hidden_layers=random.randint(1, 40))
         self.randmovevector()
         self.seteyes()
@@ -345,7 +345,7 @@ class motko:
         self.movememory = []
         # self.train()
         self.startime = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
-        print("%s reinit done" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
+        printlog("%s reinit done" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
 
     @timing_function
     def live(self, dontPrintInfo=False, Learning=True):
@@ -353,7 +353,7 @@ class motko:
             self.eatamount = 0
             # inputs are: energy 0, food avail 1, food left 2, food right 3, food color 4, color 5, meeting motko color 6
             # print ([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])
-            # print(self.energy)
+            # printlog(self.energy)
             neuraloutputs = self.responce([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])
 
             self.eat = neuraloutputs[0]
@@ -449,13 +449,13 @@ class motko:
 
     @timing_function
     def addfoodavail(self, addfood, foodcolor):
-        # print("addfoodavail",self.foodavail, self.foodcolor)
+        # printlog("addfoodavail",self.foodavail, self.foodcolor)
         self.foodavail = addfood
         self.foodcolor = foodcolor
 
     @timing_function
     def foodleft(self, foodInLeft):
-        # print(self.foodInLeft, foodInLeft)
+        # printlog(self.foodInLeft, foodInLeft)
         self.foodInLeft = foodInLeft
 
     @timing_function
