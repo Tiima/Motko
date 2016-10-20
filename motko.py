@@ -492,7 +492,7 @@ class motko:
         if(self.test):
             if(self.energy < -5.00 or self.energy > 5.00):
                 return (["dood", self.energy, self.move, self.trainings])
-            elif(diff.total_seconds() > 30):
+            if(diff.total_seconds() > 30):
                 # self.saveLog(self.filename, self.nn.inspectTofile(), 'a+')
                 return (["viable NN"])
             if(self.move == "exception dood"):
