@@ -11,6 +11,8 @@ def motkotrainer(filename, size, hiddenlayer, Trainingloops, trainingamount, tra
     # self.threadLock.acquire()
     if(trainUntilConvergence):
         filename = ("%sConverge_%s_%s" % (filename.split('_')[0], filename.split('_')[1], filename.split('_')[2]))
+    else:
+        filename = "seppo_1_1.pkl"
     # motkoinstance = motko.motkowrapper("seppo_1_1.pkl", size, hiddenlayer, false)
     motkoinstance = motko.motkowrapper(filename, size, hiddenlayer, False)
     # print (motkoinstance)
@@ -24,7 +26,7 @@ def motkotrainer(filename, size, hiddenlayer, Trainingloops, trainingamount, tra
             for _ in range(Trainingloops):
                 loopstrained += 1
                 motkoinstance.motkolive.setname("%s_%d_%s" % (filename.split('_')[0], (loopstrained * 10), filename.split('_')[2]))
-                motkoinstance.motkolive.TrainerCreateTrainingset()
+                # motkoinstance.motkolive.TrainerCreateTrainingset()
                 motkoinstance.trainfromfileds(trainingamount, trainUntilConvergence)
                 # motkoinstance.motkolive.trainerTrainUntilConvergence()
                 # motkoinstance.motkolive.saveDS()
@@ -34,7 +36,7 @@ def motkotrainer(filename, size, hiddenlayer, Trainingloops, trainingamount, tra
             loopstrained += trainingamount
             print (loopstrained, trainingamount)
             motkoinstance.motkolive.setname("%s_%d_%s" % (filename.split('_')[0], (loopstrained * 10), filename.split('_')[2]))
-            motkoinstance.motkolive.TrainerCreateTrainingset()
+            # motkoinstance.motkolive.TrainerCreateTrainingset()
             motkoinstance.trainfromfileds(trainingamount)
             # motkoinstance.saveNNwithname("%s_%d_%s" % (filename.split('_')[0], loopstrained, filename.split('_')[2]))
             motkoinstance.saveNNwithname(filename)
@@ -73,4 +75,4 @@ if __name__ == "__main__":
             if("test" in sys.argv[1]):
                 trainmotkos("seppo", [1024, 768], 7, trainUntilConvergence=True, amount=3, Trainingloops=3, trainingamount=10000, test=True)
     else:
-        trainmotkos("seppo", [1024, 768], 7, trainUntilConvergence=True, amount=20, Trainingloops=1, trainingamount=10)
+        trainmotkos("seppo", [1024, 768], 7, trainUntilConvergence=False, amount=20, Trainingloops=1, trainingamount=10)
