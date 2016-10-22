@@ -17,9 +17,12 @@ def loadmotkos(path, amount, trainingloops, size, hiddenlayers, loadfromfile, te
 
     for k in range(len(motkoslist)):
         if(int(motkoslist[k].split('_')[1]) == trainingloops):
-            motkoinstance = motko.motkowrapper(motkoslist[k], size, hiddenlayers, loadfromfile, test)
+            motkoinstance = motko.motkowrapper(os.path.join(path, 'brains', motkoslist[k]), size, hiddenlayers, loadfromfile, test)
+            motkoinstance.motkolive.setname(motkoslist[k])
             print("loading motko", motkoinstance.motkolive.getname())
-
+            motkoinstance.motkolive.reinit()
+            if(test):
+                os.remove(os.path.join(path, 'brains', motkoslist[k]))
             loadedmotkos.append(motkoinstance)
             if(len(loadedmotkos) >= amount):
                 return loadedmotkos

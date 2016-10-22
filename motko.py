@@ -27,26 +27,35 @@ class motkowrapper:
         logging.info("motkowrapper start")
         self.dontdelete = True
         self.cwd = os.getcwd()
-        self.filename = filename
+        _, self.filename = os.path.split(filename)
 
         if(loadfromfile):
-            self.motkolive = pickle.load(open(os.path.join(self.cwd, 'brains', self.filename), "rb"))
+            self.motkolive = pickle.load(open(filename, "rb"))
+            self.motkolive.reinit()
             if(self.dontdelete is False):
                 os.remove(os.path.join(self.cwd, 'brains', self.filename))
         else:
             self.motkolive = motko(self.filename, eartsize, num_hiddeLayers, test)
 
     @timing_function
-    def checkiftrainingsetexits(self):
-        if(os.path.isfile(os.path.join(self.cwd, "basic_trainingset.ds")) is False):
-            print("No basic_trainingset.ds, creating one")
-            self.motkolive.CreateTrainingset()
+    def checkiftrainingsetexits(self, test=False):
+        if(test):
+            filename = "Basic_Test_TrainingSet.ds"
+        else:
+            filename = "Basic_TrainingSet.ds"
+        if(os.path.isfile(os.path.join(self.cwd, filename)) is False):
+            print("No {}, creating one".format(filename))
+            self.motkolive.CreateTrainingset(test)
 
     @timing_function
-    def trainfromfileds(self, loops, trainUntilConvergence=False):
-        if(os.path.isfile(os.path.join(self.cwd, "basic_trainingset.ds")) is False):
-            self.motkolive.CreateTrainingset()
-        self.motkolive.trainfromfileds(SupervisedDataSet.loadFromFile("basic_trainingset.ds"), loops, trainUntilConvergence)
+    def trainfromfileds(self, loops, trainUntilConvergence=False, test=False):
+        if(test):
+            filename = "Basic_Test_TrainingSet.ds"
+        else:
+            filename = "Basic_TrainingSet.ds"
+        if(os.path.isfile(os.path.join(self.cwd, filename)) is False):
+            self.motkolive.CreateTrainingset(test)
+        self.motkolive.trainfromfileds(SupervisedDataSet.loadFromFile(filename), loops, trainUntilConvergence)
 
     @timing_function
     def checkerror(self):
@@ -95,20 +104,35 @@ class motko:
         self.nn = buildNetwork(input_amount, hidden_layers, output_amount, bias=True, hiddenclass=TanhLayer)  # todo randomize all layercalsses
 
     @timing_function
-    def CreateTrainingset(self):
-        self.printlog("starting to create trainignset")
-        sys.stdout.flush()
-        for e in range(1, 11):
-            for fa in range(1, 11, 2):
-                for fl in range(1, 11, 2):
-                    for fr in range(1, 11, 2):
-                        for fc in range(5):
-                            for c in range(5):
-                                for mtc in range(5):
-                                    # self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])))))
-                                    self.ds.addSample([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc], self.gettraining2([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc]))
-        self.saveDS("basic_trainingset.ds")
-        self.printlog("Create trainignset done")
+    def CreateTrainingset(self, test=False):
+        if(test):
+            self.printlog("starting to create trainignset")
+            sys.stdout.flush()
+            for e in range(1, 11, 3):
+                for fa in range(1, 11, 3):
+                    for fl in range(1, 11, 3):
+                        for fr in range(1, 11, 3):
+                            for fc in range(5):
+                                for c in range(5):
+                                    for mtc in range(5):
+                                        # self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])))))
+                                        self.ds.addSample([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc], self.gettraining2([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc]))
+            self.saveDS("Basic_Test_TrainingSet.ds")
+            self.printlog("Create trainignset done")
+            self.printlog("starting to create trainignset")
+            sys.stdout.flush()
+        else:
+            for e in range(1, 11):
+                for fa in range(1, 11, 2):
+                    for fl in range(1, 11, 2):
+                        for fr in range(1, 11, 2):
+                            for fc in range(5):
+                                for c in range(5):
+                                    for mtc in range(5):
+                                        # self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])))))
+                                        self.ds.addSample([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc], self.gettraining2([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc]))
+            self.saveDS("Basic_TrainingSet.ds")
+            self.printlog("Create trainignset done")
 
     @timing_function
     def trainerTrainUntilConvergence(self):
@@ -332,19 +356,15 @@ class motko:
 
     @timing_function
     def reinit(self):
-        self.printlog("%s reinit" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
-        self.randmovevector()
-        self.seteyes()
-        # self.nn.randomize()
-        self.energy = 1
+        self.printlog("{} reinit".format(datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
         self.X = random.randint(0, self.eartsize[0])
         self.Y = random.randint(0, self.eartsize[1])
+        self.randmovevector()
+        self.seteyes()
+        self.energy = 2
         self.shadow[:] = []
         self.movecount = 0
-        self.movememory = []
-        # self.train()
         self.startime = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
-        self.printlog("%s reinit done" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
 
     @timing_function
     def live(self, dontPrintInfo=False, test=False):
@@ -504,7 +524,7 @@ class motko:
         if(self.test):
             if(self.energy < -5.00 or self.energy > 5.00):
                 return (["dood", self.energy, self.move, self.trainings])
-            if(diff.total_seconds() > 30):
+            if(diff.total_seconds() > 120):
                 # self.saveLog(self.filename, self.nn.inspectTofile(), 'a+')
                 return (["viable NN"])
             if(self.move == "exception dood"):
