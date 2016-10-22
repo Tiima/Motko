@@ -49,10 +49,10 @@ def trainmotkos(name, size, hiddenlayeramount, trainUntilConvergence=False, amou
     childthreads = 0
 
     # need to create ds first if missing
-    if(test):
-        motkoinstance = motko.motkowrapper("nakki", size, hiddenlayeramount)
-        motkoinstance.checkiftrainingsetexits(test)
-        del motkoinstance
+    motkoinstance = motko.motkowrapper("nakki", size, hiddenlayeramount)
+    motkoinstance.checkiftrainingsetexits(test)
+    del motkoinstance
+
     if(trainUntilConvergence):
         print ("Training %d %ss with trainUntilConvergence loops %d" % (amount, name, trainingloops))
     else:
