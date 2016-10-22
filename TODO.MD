@@ -1,5 +1,7 @@
 - [ ] Clean commented code away
 - [ ] Rewrite mainloop it contains ideas long passed
-- [ ] Change input output values to float
-- [ ] Add more input variables
-- [ ] add logger
+- [x] Change input output values to float
+- [x] Add more input variables, energy, foodavail, food in left, food in right, food color, color, meeting motko color
+- [x] add logger
+- [ ] fix logger, it does not save to a file
+- [ ]  create random NNs random amount hidden layers, randomize layers (linear, sigmoid, thanh, softmax etc)

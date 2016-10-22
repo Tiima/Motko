@@ -6,8 +6,11 @@ import random
 import motko
 import pygame
 import logging
+from common import timing_function
+import argparse
 
 
+@timing_function
 def loadmotkos(path, amount, trainingloops, size, hiddenlayers, loadfromfile, test):
     loadedmotkos = []
     motkoslist = os.listdir(os.path.join(path, 'brains'))
@@ -27,7 +30,8 @@ class PyManMain:
     """The Main PyMan Class - This class handles the main
     initialization and creating of the Game."""
 
-    def __init__(self, width=1024, height=768, foodamount=400, motkotamount=1):
+    @timing_function
+    def __init__(self, test, noscreen, width=1024, height=768, foodamount=400, motkotamount=3):
         """Initialize"""
         self.cwd = os.getcwd()
         logging.basicConfig(filename=os.path.join(self.cwd, "pygame_main.log"), filemode='w', level=logging.INFO)
@@ -35,15 +39,15 @@ class PyManMain:
         self.gamescreen = True
         self.test = False
         self.motkotamount = motkotamount
-        if (len(sys.argv) == 2):
-            if("no" in sys.argv[1]):
-                self.gamescreen = False
-                print ("setted", sys.argv[1], self.gamescreen)
-            elif("test" in sys.argv[1]):
-                self.gamescreen = False
-                print ("setted", sys.argv[1], self.gamescreen)
-                self.test = True
-                self.motkotamount = 3
+        self.test = test
+        if(noscreen):
+            self.gamescreen = False
+            print ("setted", sys.argv[1], self.gamescreen)
+        if(test):
+            self.gamescreen = False
+            print ("setted", sys.argv[1], self.gamescreen)
+            self.test = True
+            self.motkotamount = 3
         if(self.gamescreen):
             pygame.init()
         self.BLACK = (0, 0, 0)
@@ -67,7 +71,7 @@ class PyManMain:
         self.foodblocks = []
         self.trainingloops = 1
         self.hiddenlayers = 4
-        self.savewhentreained = 100
+        self.SaveWhenTrained = 100
         # self.sleeptime = 0.1
 
         if(self.gamescreen):
@@ -83,6 +87,7 @@ class PyManMain:
         self.cwd = os.getcwd()
         self.motkot = loadmotkos(self.cwd, self.motkotamount, self.trainingloops, [self.width, self.height], self.hiddenlayers, loadfromfile=True, test=self.test)
 
+    @timing_function
     def MainLoop(self):
         """This is the Main Loop of the Game"""
         if(self.gamescreen):
@@ -92,6 +97,7 @@ class PyManMain:
             self.background.fill((255, 255, 255))
         print ("mainloop testing %s motkos at same time" % (self.motkotamount))
         dontprintdata = False
+        printsnapshotinfo = False
         last_steps = []
         # deletemotkoindex = []
 
@@ -106,11 +112,10 @@ class PyManMain:
                             dontprintdata = False
                         elif (event.key == pygame.K_LEFT):
                             dontprintdata = True
-                            print(len(self.motkot))
                         elif (event.key == pygame.K_UP):
                             # for k in range(self.motkotamount):
                             #     print (self.motkot[k].motkolive.nn.inspect())
-                            print ("slooptime")
+                            printsnapshotinfo = True
                         elif (event.key == pygame.K_DOWN):
                             # if(self.sleeptime <= 0.01):
                             #    self.sleeptime = 0.01
@@ -162,14 +167,17 @@ class PyManMain:
                     if(self.foodblocks[i].collision([self.motkot[k].motkolive.eyerightplace[0], self.motkot[k].motkolive.eyerightplace[1]], self.motkot[k].motkolive.eyesightsizeright) == 1):
                         self.motkot[k].motkolive.foodright(self.foodblocks[i].returnfoodamount())
                         # print ("right hit!")
-                # print ("motkolive")
-                self.motkot[k].motkolive.live(dontprintdata)
-                if(self.motkot[k].motkolive.trainings == self.savewhentreained):
-                    name = "%s_%s_%s.%d.pkl" % (self.motkot[k].motkolive.filename.split('_')[0], self.savewhentreained, self.motkot[k].motkolive.filename.split('_')[2])
+                # print ("motkolive")getliveinfo
+                self.motkot[k].motkolive.live(dontprintdata, test=self.test)
+                if(self.motkot[k].motkolive.trainings == self.SaveWhenTrained):
+                    name = "%s_%s_%s.%d.pkl" % (self.motkot[k].motkolive.filename.split('_')[0], self.SaveWhenTrained, self.motkot[k].motkolive.filename.split('_')[2])
                     self.motkot[k].saveNNwithname(name)
-                    self.savewhentreained += 100
+                    self.SaveWhenTrained += 100
                     print("Saving {} with errorcount {}".format(name, self.motkot[k].motkolive.currenterror))
                 # self.motkot[k].checkerror()
+                if(printsnapshotinfo):
+                    print(self.motkot[k].motkolive.getliveinfo2())
+                    printsnapshotinfo = False
 
                 if(self.gamescreen):
                     pygame.draw.rect(self.screen, self.motkot[k].motkolive.color, [self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y, self.motkot[k].motkolive.size, self.motkot[k].motkolive.size], 0)
@@ -209,5 +217,17 @@ class PyManMain:
                 break
 
 if __name__ == "__main__":
-        MainWindow = PyManMain()
-        MainWindow.MainLoop()
+    logging.basicConfig(filename="pygame_main.log", format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
+    logging.info("pygame_main start")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--test", help="run testrun", action="store_true")
+    parser.add_argument("--width", help="Width of the world, default 1024", default=1024, type=int)
+    parser.add_argument("--height", help="Height of the world, default 768", default=768, type=int)
+    parser.add_argument("--foodamount", help="food amount in world, default 400", default=400, type=int)
+    parser.add_argument("--motkotamount", help="How many motkos you have in your world, default 3", default=3, type=int)
+    parser.add_argument("--noscreen", help="run headles", action="store_true")
+    args = parser.parse_args()
+    logging.info(args)
+    print(args)
+    MainWindow = PyManMain(test=args.test, width=args.width, height=args.height, foodamount=args.foodamount, motkotamount=args.motkotamount, noscreen=args.noscreen)
+    MainWindow.MainLoop()

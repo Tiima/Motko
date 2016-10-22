@@ -37,7 +37,15 @@ class motkowrapper:
             self.motkolive = motko(self.filename, eartsize, num_hiddeLayers, test)
 
     @timing_function
+    def checkiftrainingsetexits(self):
+        if(os.path.isfile(os.path.join(self.cwd, "basic_trainingset.ds")) is False):
+            print("No basic_trainingset.ds, creating one")
+            self.motkolive.CreateTrainingset()
+
+    @timing_function
     def trainfromfileds(self, loops, trainUntilConvergence=False):
+        if(os.path.isfile(os.path.join(self.cwd, "basic_trainingset.ds")) is False):
+            self.motkolive.CreateTrainingset()
         self.motkolive.trainfromfileds(SupervisedDataSet.loadFromFile("basic_trainingset.ds"), loops, trainUntilConvergence)
 
     @timing_function
@@ -82,17 +90,12 @@ class motko:
     def pybrain_init(self, input_amount=7, output_amount=8, hidden_layers=6):
         # TODO Randomize Hiden clcasses
         self.ds = SupervisedDataSet(input_amount, output_amount)
-#        for i in range(16):
-#            trainingsetup = format(i, '04b')
-#            trainingresult = self.gettraining([int(trainingsetup[0]), int(trainingsetup[1]), int(trainingsetup[2]), int(trainingsetup[3])])
-#            self.ds.addSample((int(trainingsetup[0]), int(trainingsetup[1]), int(trainingsetup[2]), int(trainingsetup[3])),
-#                              (trainingresult[0], trainingresult[1], trainingresult[2], trainingresult[3]))
 
+        # layers are actually neurons
         self.nn = buildNetwork(input_amount, hidden_layers, output_amount, bias=True, hiddenclass=TanhLayer)  # todo randomize all layercalsses
-        self.trainer = BackpropTrainer(self.nn, self.ds)
 
     @timing_function
-    def TrainerCreateTrainingset(self):
+    def CreateTrainingset(self):
         self.printlog("starting to create trainignset")
         sys.stdout.flush()
         for e in range(1, 11):
@@ -330,7 +333,6 @@ class motko:
     @timing_function
     def reinit(self):
         self.printlog("%s reinit" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
-        # self.pybrain_init(hidden_layers=random.randint(1, 40))
         self.randmovevector()
         self.seteyes()
         # self.nn.randomize()
@@ -345,8 +347,9 @@ class motko:
         self.printlog("%s reinit done" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
 
     @timing_function
-    def live(self, dontPrintInfo=False):
+    def live(self, dontPrintInfo=False, test=False):
 
+            self.test = test
             self.eatamount = 0
             # inputs are: energy 0, food avail 1, food left 2, food right 3, food color 4, color 5, meeting motko color 6
             # print ([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])
@@ -488,6 +491,13 @@ class motko:
         # return [round(self.energy, 4), round(self.speed, 4), self.filename, diff.total_seconds(), self.movecount]
 
     @timing_function
+    def getliveinfo2(self):
+        # time2 = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
+        # diff = time2 - self.startime
+        return "Info {}:/n    network:{}/n          weights{}".format(self.filename.split('.')[0], self.nn, self.nn.params)
+        # return [round(self.energy, 4), round(self.speed, 4), self.filename, diff.total_seconds(), self.movecount]
+
+    @timing_function
     def areyouallive(self):
         time2 = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
         diff = time2 - self.startime
@@ -505,10 +515,6 @@ class motko:
                 self.energy = 2
             elif (self.trainings == 1000):
                 return ["dood"]
-            # elif(diff.total_seconds() > 900):
-                # self.saveViableNN()
-                # self.saveLog(self.filename, self.nn.inspectTofile(), 'a+')
-                # return (["viable NN"])
             if(self.move == "exception dood"):
                 return (["dood", self.move])
             return ["ok"]
