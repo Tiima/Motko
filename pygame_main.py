@@ -16,6 +16,7 @@ def loadmotkos(path, amount, trainingloops, size, hiddenlayers, loadfromfile, te
         if(int(motkoslist[k].split('_')[1]) == trainingloops):
             motkoinstance = motko.motkowrapper(motkoslist[k], size, hiddenlayers, loadfromfile, test)
             print("loading motko", motkoinstance.motkolive.getname())
+
             loadedmotkos.append(motkoinstance)
             if(len(loadedmotkos) >= amount):
                 return loadedmotkos
@@ -26,7 +27,7 @@ class PyManMain:
     """The Main PyMan Class - This class handles the main
     initialization and creating of the Game."""
 
-    def __init__(self, width=1024, height=768, foodamount=400, motkotamount=3):
+    def __init__(self, width=1024, height=768, foodamount=400, motkotamount=1):
         """Initialize"""
         self.cwd = os.getcwd()
         logging.basicConfig(filename=os.path.join(self.cwd, "pygame_main.log"), filemode='w', level=logging.INFO)
@@ -66,6 +67,7 @@ class PyManMain:
         self.foodblocks = []
         self.trainingloops = 1
         self.hiddenlayers = 4
+        self.savewhentreained = 100
         # self.sleeptime = 0.1
 
         if(self.gamescreen):
@@ -89,7 +91,7 @@ class PyManMain:
             self.background = self.background.convert()
             self.background.fill((255, 255, 255))
         print ("mainloop testing %s motkos at same time" % (self.motkotamount))
-        dontprintdata = True
+        dontprintdata = False
         last_steps = []
         # deletemotkoindex = []
 
@@ -108,8 +110,7 @@ class PyManMain:
                         elif (event.key == pygame.K_UP):
                             # for k in range(self.motkotamount):
                             #     print (self.motkot[k].motkolive.nn.inspect())
-                            self.sleeptime += 0.01
-                            print (self.sleeptime)
+                            print ("slooptime")
                         elif (event.key == pygame.K_DOWN):
                             # if(self.sleeptime <= 0.01):
                             #    self.sleeptime = 0.01
@@ -162,7 +163,12 @@ class PyManMain:
                         self.motkot[k].motkolive.foodright(self.foodblocks[i].returnfoodamount())
                         # print ("right hit!")
                 # print ("motkolive")
-                self.motkot[k].motkolive.live(dontprintdata, False)
+                self.motkot[k].motkolive.live(dontprintdata)
+                if(self.motkot[k].motkolive.trainings == self.savewhentreained):
+                    name = "%s_%s_%s.%d.pkl" % (self.motkot[k].motkolive.filename.split('_')[0], self.savewhentreained, self.motkot[k].motkolive.filename.split('_')[2])
+                    self.motkot[k].saveNNwithname(name)
+                    self.savewhentreained += 100
+                    print("Saving {} with errorcount {}".format(name, self.motkot[k].motkolive.currenterror))
                 # self.motkot[k].checkerror()
 
                 if(self.gamescreen):

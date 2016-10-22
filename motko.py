@@ -127,23 +127,23 @@ class motko:
 
     @timing_function
     def trainfromfileds(self, fileds, loops=10, trainUntilConvergence=False):
-        self.printlog("starting training {}".format(len(fileds)))
+        self.printlog("Loading training set {} samples long".format(len(fileds)))
         sys.stdout.flush()
         filedstrainer = BackpropTrainer(self.nn, fileds)
-        self.printlog("Loading trainer done")
+        self.printlog("Loading training set done")
         sys.stdout.flush()
         if(trainUntilConvergence):
-            self.printlog("starting trainUntilConvergence {} loops".format(loops))
-            for i in range(loops):
-                self.printlog("loop {} before {}".format(i, filedstrainer.train()))
+            self.printlog("Starting trainUntilConvergence {} loops".format(loops))
+            for i in range(1, loops + 1):
+                self.printlog("Loop {}, before error:{}".format(i, filedstrainer.train()))
                 sys.stdout.flush()
                 filedstrainer.trainUntilConvergence(validationProportion=0.2)
-                self.printlog("loop {} after {}".format(i, filedstrainer.train()))
+                self.printlog("Loop {}, after error:{}".format(i, filedstrainer.train()))
                 sys.stdout.flush()
         else:
-            self.printlog("starting training {} loops".format(loops))
-            for i in range(loops):
-                self.printlog(filedstrainer.train())
+            self.printlog("Starting training {} loops".format(loops))
+            for i in range(1, loops + 1):
+                self.printlog("Loop {}, error:{}".format(i, filedstrainer.train()))
                 sys.stdout.flush()
 
     @timing_function
@@ -154,7 +154,6 @@ class motko:
     def responce(self, liveinput):
         trainingresult = self.gettraining2(liveinput)
         self.ds.addSample(liveinput, trainingresult)
-        # self.printlog("%s: %s: %s" % (" ".join(str(x) for x in self.roundfloat(liveinput)), " ".join(str(x) for x in self.roundfloat(trainingresult)), " ".join(str(x) for x in self.roundfloat(self.nn.activate(liveinput)))))
         if(self.trainsteps == self.aftermovestrain):
             self.trainer = BackpropTrainer(self.nn, self.ds)
             # self.trainer.trainEpochs(1)
@@ -163,8 +162,8 @@ class motko:
             # for  _ in range(10):
             #    self.trainer.trainUntilConvergence()
             self.currenterror = self.trainer.train()
-            # self.printlog("trainUntilConvergence2 %s" % (self.currenterror))
-            self.printlog("%s: %s: %s" % (" ".join(str(x) for x in self.roundfloat(liveinput)), " ".join(str(x) for x in self.roundfloat(trainingresult)), " ".join(str(x) for x in self.roundfloat(self.nn.activate(liveinput)))))
+            # self.printlog("curren error {}".format(self.currenterror))
+            # self.printlog("%s: %s: %s" % (" ".join(str(x) for x in self.roundfloat(liveinput)), " ".join(str(x) for x in self.roundfloat(trainingresult)), " ".join(str(x) for x in self.roundfloat(self.nn.activate(liveinput)))))
             self.trainsteps = 0
             self.trainings += 1
         # if(len(self.ds) == self.aftermovestrain):
@@ -230,7 +229,7 @@ class motko:
         self.movecount = 0
         self.movememory = []
         self.trainsteps = 0
-        self.aftermovestrain = 5000
+        self.aftermovestrain = 50000
         self.randomcount = random.randint(5, 50)
 
         self.size = (5 + int(self.energy * 6))
@@ -346,13 +345,16 @@ class motko:
         self.printlog("%s reinit done" % (datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))))
 
     @timing_function
-    def live(self, dontPrintInfo=False, Learning=True):
+    def live(self, dontPrintInfo=False):
 
             self.eatamount = 0
             # inputs are: energy 0, food avail 1, food left 2, food right 3, food color 4, color 5, meeting motko color 6
             # print ([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])
             # printlog(self.energy)
             neuraloutputs = self.responce([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])
+
+            if(dontPrintInfo):
+                self.printlog("%s: %s: %f: %d" % (" ".join(str(x) for x in self.roundfloat([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])), " ".join(str(x) for x in self.roundfloat(neuraloutputs)), self.currenterror, len(self.ds)))
 
             self.eat = neuraloutputs[0]
             self.eatamount = neuraloutputs[1]
@@ -482,7 +484,7 @@ class motko:
     def getliveinfo(self):
         # time2 = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
         # diff = time2 - self.startime
-        return [round(self.energy, 4), self.filename.split('.')[0], self.movecount, self.trainings]
+        return [round(self.energy, 4), self.filename.split('.')[0], self.movecount, self.trainings, self.currenterror]
         # return [round(self.energy, 4), round(self.speed, 4), self.filename, diff.total_seconds(), self.movecount]
 
     @timing_function
@@ -500,15 +502,9 @@ class motko:
             return ["ok"]
         else:
             if(self.energy < -5.00 or self.energy > 5.00):
-                self.energy = 0
-                if (self.energy > 5.00):
-                    # print ("Not viable motko, randomize %s" % (self.getliveinfo()))
-                    # self.reinit()
-                    return ["ok"]  # return ["dood"]
-                else:
-                    # print ("Not viable motko, randomize %s" % (self.getliveinfo()))
-                    # self.reinit()
-                    return ["ok"]  # return ["dood"]
+                self.energy = 2
+            elif (self.trainings == 1000):
+                return ["dood"]
             # elif(diff.total_seconds() > 900):
                 # self.saveViableNN()
                 # self.saveLog(self.filename, self.nn.inspectTofile(), 'a+')
