@@ -421,7 +421,7 @@ class motko:
             # print ([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])
             # printlog(self.energy)
             neuraloutputs = self.responce([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])
-
+            logging.info("{}: {}".format([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor], neuraloutputs))
             if(dontPrintInfo):  # todo change that you can see output names
                 self.printlog("\n%s\n%s\n%s %f: %d" % ("eat\t\teata\tmove\ttleft\ttright\tkill\tflee\tsex", "\t".join(str(x) for x in self.roundfloat(self.trainingresult)), "\t".join(str(x) for x in self.roundfloat(neuraloutputs)), self.currenterror, len(self.ds)))
                 # self.printlog("\n%s: \n%s: %f: %d" % (" ".join(str(x) for x in self.roundfloat([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])), " ".join(str(x) for x in self.roundfloat(neuraloutputs)), self.currenterror, len(self.ds)))
@@ -439,6 +439,7 @@ class motko:
             if (self.eat != 0):
                 if(self.foodavail != 0):
                     self.energy = self.energy + self.eatamount
+
             self.energy = self.energy - self.consumption
 
             if(self.directionvector[self.direction][0] == 0 and self.directionvector[self.direction][1] == 0):
@@ -549,7 +550,7 @@ class motko:
     def roundfloat(self, rounuppilist):
         roundedlist = []
         for i in range(len(rounuppilist)):
-            roundedlist.append('{:.2f}'.format(rounuppilist[i]))
+            roundedlist.append('{:.3f}'.format(rounuppilist[i]))
         return roundedlist
 
     @timing_function
@@ -592,7 +593,7 @@ class motko:
                 return (["dood", self.move])
             return ["ok"]
         else:
-            if(self.energy < -15.00 or self.energy > 15.00):
+            if(self.energy < -10.00 or self.energy > 10.00):
                 #  self.energy = 2
                 return ["dood"]
             elif (self.trainings == 1000):

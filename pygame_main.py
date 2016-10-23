@@ -102,6 +102,7 @@ class PyManMain:
         dontprintdata = False
         printsnapshotinfo = False
         last_steps = []
+        tempFoodBlockID = 0
         # deletemotkoindex = []
 
         while 1:
@@ -152,19 +153,10 @@ class PyManMain:
                 for i in range(len(self.foodblocks)):
                     if self.foodblocks[i].collision([self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y], [self.motkot[k].motkolive.size, self.motkot[k].motkolive.size]) == 1:
                         self.motkot[k].motkolive.addfoodavail(self.foodblocks[i].returnfoodamount(), self.foodblocks[i].colornumber)
-                        if(self.motkot[k].motkolive.didoueat() > 0):
-                            # print ("self.foodblocks[i].foodamount1", self.foodblocks[i].foodamount, self.motkot[k].motkolive.didoueat())
-                            self.foodblocks[i].foodamount = self.foodblocks[i].foodamount - self.motkot[k].motkolive.didoueat()
-                            if (self.foodblocks[i].foodamount < 0):
-                                # print ("self.foodblocks[i].foodamount2", self.foodblocks[i].foodamount, self.motkot[k].motkolive.didoueat())
-                                del self.foodblocks[i]
-                                tempplace = [random.randint(0, self.width), random.randint(0, self.height)]
-                                newfb = foodblock.foodblock(tempplace, [2, 2])
-                                # print (newfb.getinfo())
-                                self.foodblocks.append(newfb)
+
                     else:
                         if(self.gamescreen):
-                            pygame.draw.rect(self.screen, self.foodblocks[i].color, [self.foodblocks[i].X, self.foodblocks[i].Y, self.foodblocks[i].size[0], self.foodblocks[i].size[1]], 0)
+                            pygame.draw.rect(self.screen, self.foodblocks[i].color, [self.foodblocks[i].X, self.foodblocks[i].Y, self.foodblocks[i].getSize1(), self.foodblocks[i].getSize2()], 0)
                     if(self.foodblocks[i].collision([self.motkot[k].motkolive.eyeleftplace[0], self.motkot[k].motkolive.eyeleftplace[1]], self.motkot[k].motkolive.eyesightsizeleft) == 1):
                         self.motkot[k].motkolive.foodleft(self.foodblocks[i].returnfoodamount())
                         # print ("left hit!")
@@ -173,12 +165,38 @@ class PyManMain:
                         # print ("right hit!")
                 # print ("motkolive")getliveinfo
                 self.motkot[k].motkolive.live(dontprintdata, test=self.test)
+                didoueat = self.motkot[k].motkolive.didoueat()
+                if(didoueat > 0):
+                    self.foodblocks[tempFoodBlockID].foodamount = self.foodblocks[tempFoodBlockID].foodamount - didoueat
+                    if (self.foodblocks[i].foodamount < 0):
+                                # print ("self.foodblocks[i].foodamount2", self.foodblocks[i].foodamount, self.motkot[k].motkolive.didoueat())
+                                del self.foodblocks[tempFoodBlockID]
+                                tempplace = [random.randint(0, self.width), random.randint(0, self.height)]
+                                newfb = foodblock.foodblock(tempplace, [2, 2])
+                                # print (newfb.getinfo())
+                                self.foodblocks.append(newfb)
+
                 if(self.motkot[k].motkolive.trainings == self.SaveWhenTrained):
                     name = "%s_%s_%s.%d.pkl" % (self.motkot[k].motkolive.filename.split('_')[0], self.SaveWhenTrained, self.motkot[k].motkolive.filename.split('_')[2])
                     self.motkot[k].saveNNwithname(name)
                     self.SaveWhenTrained += 100
                     print("Saving {} with errorcount {}".format(name, self.motkot[k].motkolive.currenterror))
                 # self.motkot[k].checkerror()
+                # print ("check food bloks eating")
+                for i in range(len(self.foodblocks)):
+                    if self.foodblocks[i].collision([self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y], [self.motkot[k].motkolive.size, self.motkot[k].motkolive.size]) == 1:
+                        self.motkot[k].motkolive.addfoodavail(self.foodblocks[i].returnfoodamount(), self.foodblocks[i].colornumber)
+                        if(self.motkot[k].motkolive.didoueat() > 0):
+                            # print ("self.foodblocks[i].foodamount1", self.foodblocks[i].foodamount, self.motkot[k].motkolive.didoueat())
+                            self.foodblocks[i].calculateFoodamount(self.foodblocks[i].foodamount - self.motkot[k].motkolive.didoueat())
+                            if (self.foodblocks[i].foodamount < 0):
+                                # print ("self.foodblocks[i].foodamount2", self.foodblocks[i].foodamount, self.motkot[k].motkolive.didoueat())
+                                del self.foodblocks[i]
+                                tempplace = [random.randint(0, self.width), random.randint(0, self.height)]
+                                newfb = foodblock.foodblock(tempplace, [2, 2])
+                                # print (newfb.getinfo())
+                                self.foodblocks.append(newfb)
+
                 if(printsnapshotinfo):
                     print(self.motkot[k].motkolive.getliveinfo2())
 

@@ -38,3 +38,15 @@ class foodblock:
 
     def returnfoodamount(self):
         return self.foodamount
+
+    def calculateFoodamount(self, eated):
+        self.foodamount = self.foodamount - eated
+        if(self.foodamount > 0):
+            self.size[0] = self.size[0] + int(self.foodamount * 6)
+            self.size[1] = self.size[1] + int(self.foodamount * 6)
+
+    def getSize1(self):
+        return self.size[0]
+
+    def getSize2(self):
+        return self.size[1]
