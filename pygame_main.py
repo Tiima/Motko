@@ -181,7 +181,6 @@ class PyManMain:
                 # self.motkot[k].checkerror()
                 if(printsnapshotinfo):
                     print(self.motkot[k].motkolive.getliveinfo2())
-                    printsnapshotinfo = False
 
                 if(self.gamescreen):
                     pygame.draw.rect(self.screen, self.motkot[k].motkolive.color, [self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y, self.motkot[k].motkolive.size, self.motkot[k].motkolive.size], 0)

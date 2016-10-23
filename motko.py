@@ -54,7 +54,7 @@ class motkowrapper:
             self.motkolive.CreateTrainingset(test)
 
     @timing_function
-    def trainfromfileds(self, loops, trainUntilConvergence=False, test=False):
+    def trainfromfileds(self, loops, trainUntilConvergence=False, smallerTS=False):
         if(test):
             filename = "Basic_Test_TrainingSet.ds"
         else:
@@ -559,7 +559,7 @@ class motko:
 
     @timing_function
     def getliveinfo2(self):
-        returndata = ""
+        returndata = "{}\n".format(self.filename.split('.')[0])
         returndata += "inLayer:{}\n".format(self.nn["in"])  # self.inLayer
         for i in range(len(self.hiddenlayers)):
             returndata += "\thidden{}:{}, neurons {}\n".format(i, self.hiddenlayers[i], self.hiddenLayerNeuronsAmount[i])
@@ -568,8 +568,7 @@ class motko:
 
     @timing_function
     def getliveinfo3(self):
-        returndata = ""
-
+        returndata = "{}\n".format(self.filename.split('.')[0])
         returndata += "inLayer:{}\n{}\n".format(self.nn["in"], self.connections[0].params)  # self.inLayer
         for i in range(len(self.hiddenlayers)):
             returndata += "\thidden{}:{}, neurons {}\n{}\n".format(i, self.hiddenlayers[i], self.hiddenLayerNeuronsAmount[i], self.connections[i + 1].params)
