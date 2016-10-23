@@ -61,7 +61,6 @@ def trainmotkos(filename, size, hiddenlayeramount, trainUntilConvergence=False, 
     else:
         print ("Training %d %s with training loops %d x training per loop %d" % (amount, filename, trainingloops, trainingamount))
     for i in range(1, amount + 1):
-        print(i)
         if (os.path.isfile(os.path.join(os.getcwd(), "brains", filename)) is True):
             print("training only one motko")
             tempfilename = "%s_%s_%d.pkl" % (filename.split('_')[0], filename.split('_')[1], (int(filename.split('_')[2].split(".")[0])))

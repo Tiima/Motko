@@ -72,7 +72,7 @@ class PyManMain:
         self.height = height
         self.foodamount = foodamount
         self.foodblocks = []
-        self.trainingloops = 30
+        self.trainingloops = 10000
         self.hiddenlayers = 4
         self.SaveWhenTrained = 100
         # self.sleeptime = 0.1

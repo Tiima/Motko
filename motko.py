@@ -6,11 +6,17 @@ import time
 import random
 import datetime
 import pickle
+import logging
 from pybrain.supervised.trainers import BackpropTrainer
 from pybrain.datasets import SupervisedDataSet
-from pybrain.tools.shortcuts import buildNetwork
+from pybrain.structure import LinearLayer
+from pybrain.structure import SigmoidLayer
 from pybrain.structure import TanhLayer
-import logging
+# from pybrain.structure import GaussianLayer
+from pybrain.structure import SoftmaxLayer
+# from pybrain.structure import BiasUnit
+from pybrain.structure import FullConnection
+from pybrain.structure import FeedForwardNetwork
 from common import timing_function
 
 """
@@ -97,11 +103,48 @@ class motko:
 
     @timing_function
     def pybrain_init(self, input_amount=7, output_amount=8, hidden_layers=6):
-        # TODO Randomize Hiden clcasses
+        # TODO Randomize Hiden clcasses, ongoing...
+        # because threading
+        random.jumpahead(1252157)
+        self.hiddenLayerAmount = random.randint(1, hidden_layers * 2)
+        self.hiddenleyerNeuronsAmount = []
+        # layerlist = [LinearLayer,SigmoidLayer,TanhLayer, GaussianLayer, SoftmaxLayer]  # for future use
         self.ds = SupervisedDataSet(input_amount, output_amount)
+        self.nn = FeedForwardNetwork()
+        self.inLayer = LinearLayer(input_amount, "in")
+        # self.bias = BiasUnit(name="bias")
+        if(random.randint(0, 100) >= 50):
+            self.outputLayer = LinearLayer(output_amount, "out")  # could be lineare layer or softmax???
+        else:
+            self.outputLayer = SoftmaxLayer(output_amount, "out")  # could be lineare layer or softmax???
+        self.hiddenlayers = []
+        self.connections = []
+        self.nn.addInputModule(self.inLayer)
+        self.nn.addOutputModule(self.outputLayer)
+        # self.nn.addModule(self.bias)
+        # self.nn.addConnection(FullConnection(self.inLayer, self.bias))
 
-        # layers are actually neurons
-        self.nn = buildNetwork(input_amount, hidden_layers, output_amount, bias=True, hiddenclass=TanhLayer)  # todo randomize all layercalsses
+        for i in range(self.hiddenLayerAmount):  # example math.random(hidden_layers, hidden_layers*10)???
+            self.hiddenleyerNeuronsAmount.append(random.randint(1, hidden_layers * 2))
+            if(random.randint(0, 100) >= 50):
+                self.hiddenlayers.append(TanhLayer(self.hiddenleyerNeuronsAmount[i], "hidden{}".format(i)))  # tanh or  sigmoid ??? and how many neurons ? now it is hidden_layers amount
+            else:
+                self.hiddenlayers.append(SigmoidLayer(self.hiddenleyerNeuronsAmount[i], "hidden{}".format(i)))  # tanh or  sigmoid ??? and how many neurons ? now it is hidden_layers amount
+
+            if(i == 0):
+                self.connections.append(FullConnection(self.inLayer, self.hiddenlayers[i - 1], name="in_to_hid"))
+            else:
+                self.connections.append(FullConnection(self.hiddenlayers[i - 1], self.hiddenlayers[i], name="hid{}_to_hid{}".format(i - 1, i)))
+            self.nn.addModule(self.hiddenlayers[i])
+
+        self.connections.append(FullConnection(self.hiddenlayers[len(self.hiddenlayers) - 1], self.outputLayer, name="hid_to_out"))
+
+        for i in range(len(self.connections)):
+            self.nn.addConnection(self.connections[i])
+
+        self.nn.sortModules()
+        # print (self.nn)
+        # self.printlog("hiddenLayerAmount:{}".format(self.hiddenLayerAmount))
 
     @timing_function
     def CreateTrainingset(self, test=False):
@@ -156,7 +199,7 @@ class motko:
     def trainfromfileds(self, fileds, loops=10, trainUntilConvergence=False):
         self.printlog("Loading training set {} samples long".format(len(fileds)))
         sys.stdout.flush()
-        filedstrainer = BackpropTrainer(self.nn, fileds)
+        filedstrainer = BackpropTrainer(self.nn, fileds, learningrate=0.1, momentum=0.1)  # small learning rate should it be bigger?
         self.printlog("Loading training set done")
         sys.stdout.flush()
         if(trainUntilConvergence):
@@ -182,7 +225,7 @@ class motko:
         self.trainingresult = self.gettraining2(liveinput)
         self.ds.addSample(liveinput, self.trainingresult)
         if(self.trainsteps == self.aftermovestrain):
-            self.trainer = BackpropTrainer(self.nn, self.ds)
+            self.trainer = BackpropTrainer(self.nn, self.ds, learningrate=0.1, momentum=0.1)  # small learning rate should it be bigger?
             # self.trainer.trainEpochs(1)
             # self.currenterror = self.trainer.train()
             # self.printlog("trainUntilConvergence1: %s" % (self.currenterror))
@@ -378,7 +421,7 @@ class motko:
             neuraloutputs = self.responce([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])
 
             if(dontPrintInfo):  # todo change that you can see output names
-                self.printlog("\n%s:\n%s: %f: %d" % ("\t".join(str(x) for x in self.roundfloat(self.trainingresult)), "\t".join(str(x) for x in self.roundfloat(neuraloutputs)), self.currenterror, len(self.ds)))
+                self.printlog("\n%s\n%s\n%s %f: %d" % ("eat\t\teata\tmove\ttleft\ttright\tkill\tflee\tsex", "\t".join(str(x) for x in self.roundfloat(self.trainingresult)), "\t".join(str(x) for x in self.roundfloat(neuraloutputs)), self.currenterror, len(self.ds)))
                 # self.printlog("\n%s: \n%s: %f: %d" % (" ".join(str(x) for x in self.roundfloat([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])), " ".join(str(x) for x in self.roundfloat(neuraloutputs)), self.currenterror, len(self.ds)))
 
             self.eat = neuraloutputs[0]

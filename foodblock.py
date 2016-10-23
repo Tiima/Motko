@@ -8,6 +8,8 @@ class foodblock:
         self.X = place[0]
         self.Y = place[1]
         self.size = size
+        # because threading
+        random.jumpahead(1252157)
         self.foodamount = random.random()
         self.size[0] = self.size[0] + int(self.foodamount * 6)
         self.size[1] = self.size[1] + int(self.foodamount * 6)
