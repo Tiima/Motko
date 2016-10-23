@@ -107,7 +107,7 @@ if __name__ == "__main__":
     logging.info(args)
     print(args)
     if(args.test):
-        trainmotkos("testinakki", [1024, 768], hiddenlayeramount=args.hiddenlayeramount, trainUntilConvergence=False, amount=3, trainingloops=3, trainingamount=1, test=args.test)
+        trainmotkos("testinakki", [1024, 768], hiddenlayeramount=args.hiddenlayeramount, trainUntilConvergence=False, amount=2, trainingloops=2, trainingamount=2, test=args.test)
     elif(args.amount is not None and args.amount is not None and args.trainingamount is not None and args.motko is not None):
         trainmotkos(filename=args.motko, size=[1024, 768], hiddenlayeramount=args.hiddenlayeramount, trainUntilConvergence=args.trainUntilConvergence, amount=args.amount, trainingloops=args.trainingloops, trainingamount=args.trainingamount)
     else:
