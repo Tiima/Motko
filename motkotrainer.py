@@ -21,6 +21,8 @@ def motkotrainer(filename, size, hiddenlayeramount, trainingloops, trainingamoun
         motkoinstance = motko.motkowrapper(filename, size, hiddenlayeramount, False)
         loopstrained = 0
     # self.threadLock.release()trainUntilConvergencetrainUntilConvergence
+    motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), "Start training\n", 'a+')
+    motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo2(), 'a+')
     if(test):
         for _ in range(trainingloops):
             loopstrained += trainingamount
@@ -42,6 +44,8 @@ def motkotrainer(filename, size, hiddenlayeramount, trainingloops, trainingamoun
                 motkoinstance.motkolive.setname(filenametemp)
                 motkoinstance.trainfromfileds(trainingamount, trainUntilConvergence)
                 motkoinstance.saveNNwithname(filenametemp)
+    motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), "Stop training\n", 'a+')
+    motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo2(), 'a+')
     del motkoinstance
 
 
@@ -88,6 +92,7 @@ def trainmotkos(filename, size, hiddenlayeramount, trainUntilConvergence=False, 
 if __name__ == "__main__":
     logging.basicConfig(filename="motkotrainer.log", format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
     logging.info("motkotrainer start")
+    logging.debug("motkotrainer start")
     parser = argparse.ArgumentParser()
     parser.add_argument("--test", help="run testrun", action="store_true")
     parser.add_argument("--trainUntilConvergence", help="train untill converse, will take long time", action="store_true")

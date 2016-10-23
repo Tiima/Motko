@@ -107,29 +107,29 @@ class motko:
         # because threading
         random.jumpahead(1252157)
         self.hiddenLayerAmount = random.randint(1, hidden_layers * 2)
-        self.hiddenleyerNeuronsAmount = []
+        self.hiddenLayerNeuronsAmount = []
         # layerlist = [LinearLayer,SigmoidLayer,TanhLayer, GaussianLayer, SoftmaxLayer]  # for future use
         self.ds = SupervisedDataSet(input_amount, output_amount)
         self.nn = FeedForwardNetwork()
         self.inLayer = LinearLayer(input_amount, "in")
         # self.bias = BiasUnit(name="bias")
         if(random.randint(0, 100) >= 50):
-            self.outputLayer = LinearLayer(output_amount, "out")  # could be lineare layer or softmax???
+            self.outLayer = LinearLayer(output_amount, "out")  # could be lineare layer or softmax???
         else:
-            self.outputLayer = SoftmaxLayer(output_amount, "out")  # could be lineare layer or softmax???
+            self.outLayer = SoftmaxLayer(output_amount, "out")  # could be lineare layer or softmax???
         self.hiddenlayers = []
         self.connections = []
         self.nn.addInputModule(self.inLayer)
-        self.nn.addOutputModule(self.outputLayer)
+        self.nn.addOutputModule(self.outLayer)
         # self.nn.addModule(self.bias)
         # self.nn.addConnection(FullConnection(self.inLayer, self.bias))
 
         for i in range(self.hiddenLayerAmount):  # example math.random(hidden_layers, hidden_layers*10)???
-            self.hiddenleyerNeuronsAmount.append(random.randint(1, hidden_layers * 2))
+            self.hiddenLayerNeuronsAmount.append(random.randint(1, hidden_layers * 2))
             if(random.randint(0, 100) >= 50):
-                self.hiddenlayers.append(TanhLayer(self.hiddenleyerNeuronsAmount[i], "hidden{}".format(i)))  # tanh or  sigmoid ??? and how many neurons ? now it is hidden_layers amount
+                self.hiddenlayers.append(TanhLayer(self.hiddenLayerNeuronsAmount[i], "hidden{}".format(i)))  # tanh or  sigmoid ??? and how many neurons ? now it is hidden_layers amount
             else:
-                self.hiddenlayers.append(SigmoidLayer(self.hiddenleyerNeuronsAmount[i], "hidden{}".format(i)))  # tanh or  sigmoid ??? and how many neurons ? now it is hidden_layers amount
+                self.hiddenlayers.append(SigmoidLayer(self.hiddenLayerNeuronsAmount[i], "hidden{}".format(i)))  # tanh or  sigmoid ??? and how many neurons ? now it is hidden_layers amount
 
             if(i == 0):
                 self.connections.append(FullConnection(self.inLayer, self.hiddenlayers[i - 1], name="in_to_hid"))
@@ -137,13 +137,13 @@ class motko:
                 self.connections.append(FullConnection(self.hiddenlayers[i - 1], self.hiddenlayers[i], name="hid{}_to_hid{}".format(i - 1, i)))
             self.nn.addModule(self.hiddenlayers[i])
 
-        self.connections.append(FullConnection(self.hiddenlayers[len(self.hiddenlayers) - 1], self.outputLayer, name="hid_to_out"))
+        self.connections.append(FullConnection(self.hiddenlayers[len(self.hiddenlayers) - 1], self.outLayer, name="hid_to_out"))
 
         for i in range(len(self.connections)):
             self.nn.addConnection(self.connections[i])
 
         self.nn.sortModules()
-        # print (self.nn)
+        self.printlog(self.getliveinfo2())
         # self.printlog("hiddenLayerAmount:{}".format(self.hiddenLayerAmount))
 
     @timing_function
@@ -299,7 +299,7 @@ class motko:
         self.movecount = 0
         self.movememory = []
         self.trainsteps = 0
-        self.aftermovestrain = 500
+        self.aftermovestrain = 5000
         self.randomcount = random.randint(5, 50)
 
         self.size = (5 + int(self.energy * 6))
@@ -557,10 +557,23 @@ class motko:
 
     @timing_function
     def getliveinfo2(self):
-        # time2 = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
-        # diff = time2 - self.startime
-        return "Info {}:\n    network:{}\n          weights{}".format(self.filename.split('.')[0], self.nn, self.nn.params)
-        # return [round(self.energy, 4), round(self.speed, 4), self.filename, diff.total_seconds(), self.movecount]
+        returndata = ""
+        returndata += "inLayer:{}\n".format(self.nn["in"])  # self.inLayer
+        for i in range(len(self.hiddenlayers)):
+            returndata += "\thidden{}:{}, neurons {}\n".format(i, self.hiddenlayers[i], self.hiddenLayerNeuronsAmount[i])
+        returndata += "outLayer:{}\n".format(self.nn["out"])  # self.outLayer
+        return returndata
+
+    @timing_function
+    def getliveinfo3(self):
+        returndata = ""
+
+        returndata += "inLayer:{}\n{}\n".format(self.nn["in"], self.connections[0].params)  # self.inLayer
+        for i in range(len(self.hiddenlayers)):
+            returndata += "\thidden{}:{}, neurons {}\n{}\n".format(i, self.hiddenlayers[i], self.hiddenLayerNeuronsAmount[i], self.connections[i + 1].params)
+
+        returndata += "outLayer:{}\n{}\n".format(self.nn["out"], self.connections[len(self.connections) - 1].params)  # self.outLayer
+        return returndata
 
     @timing_function
     def areyouallive(self):

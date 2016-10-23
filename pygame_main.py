@@ -72,7 +72,7 @@ class PyManMain:
         self.height = height
         self.foodamount = foodamount
         self.foodblocks = []
-        self.trainingloops = 10000
+        self.trainingloops = 1
         self.hiddenlayers = 4
         self.SaveWhenTrained = 100
         # self.sleeptime = 0.1
@@ -232,6 +232,5 @@ if __name__ == "__main__":
     parser.add_argument("--noscreen", help="run headles", action="store_true")
     args = parser.parse_args()
     logging.info(args)
-    print(args)
     MainWindow = PyManMain(test=args.test, width=args.width, height=args.height, foodamount=args.foodamount, motkotamount=args.motkotamount, noscreen=args.noscreen)
     MainWindow.MainLoop()
