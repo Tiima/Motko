@@ -72,7 +72,7 @@ class PyManMain:
         self.height = height
         self.foodamount = foodamount
         self.foodblocks = []
-        self.trainingloops = 1
+        self.trainingloops = 30
         self.hiddenlayers = 4
         self.SaveWhenTrained = 100
         # self.sleeptime = 0.1
@@ -218,6 +218,7 @@ class PyManMain:
                 break
             if(self.test and self.trainingloops > 1000):
                 break
+            printsnapshotinfo = False
 
 if __name__ == "__main__":
     logging.basicConfig(filename="pygame_main.log", format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)

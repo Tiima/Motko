@@ -4,45 +4,48 @@ import multiprocessing
 import logging
 from common import timing_function
 import argparse
+import os
 
 
 @timing_function
-def motkotrainer(filename, size, hiddenlayeramount, trainingloops, trainingamount, trainUntilConvergence=False, test=False):
+def motkotrainer(filename, size, hiddenlayeramount, trainingloops, trainingamount, filename2, trainUntilConvergence=False, test=False):
     # self.threadLock.acquire()
     if(trainUntilConvergence):
         filename = ("%sConverge_%s_%s" % (filename.split('_')[0], filename.split('_')[1], filename.split('_')[2]))
     # motkoinstance = motko.motkowrapper("seppo_1_1.pkl", size, hiddenlayer, false)
-    motkoinstance = motko.motkowrapper(filename, size, hiddenlayeramount, False)
-    motkoinstance.checkiftrainingsetexits(test)
-    loopstrained = 0
+    if(os.path.isfile(os.path.join(os.getcwd(), 'brains', filename)) is True):
+        motkoinstance = motko.motkowrapper(os.path.join(os.getcwd(), 'brains', filename), size, hiddenlayeramount, True)
+        filename = filename2
+        loopstrained = int(filename.split('_')[1])
+    else:
+        motkoinstance = motko.motkowrapper(filename, size, hiddenlayeramount, False)
+        loopstrained = 1
     # self.threadLock.release()trainUntilConvergencetrainUntilConvergence
     if(test):
         for _ in range(trainingloops):
-            loopstrained += 1
-            motkoinstance.trainfromfileds(trainingamount, trainUntilConvergence, test)
-            motkoinstance.saveNNwithname("%s_%d_%s" % (filename.split('_')[0], (loopstrained * trainingamount), filename.split('_')[2]))
+            loopstrained += trainingamount
+            filenametemp = "%s_%d_%s" % (filename.split('_')[0], (loopstrained), filename.split('_')[2])
+            motkoinstance.motkolive.setname(filenametemp)
+            motkoinstance.trainfromfileds(trainingamount, trainUntilConvergence)
+            motkoinstance.saveNNwithname(filenametemp)
     elif(trainUntilConvergence):
             for _ in range(trainingloops):
-                loopstrained += 1
-                motkoinstance.motkolive.setname("%s_%d_%s" % (filename.split('_')[0], (loopstrained * trainingamount), filename.split('_')[2]))
-                # motkoinstance.motkolive.TrainerCreateTrainingset()
+                loopstrained += trainingamount
+                filenametemp = "%s_%d_%s" % (filename.split('_')[0], (loopstrained), filename.split('_')[2])
+                motkoinstance.motkolive.setname(filenametemp)
                 motkoinstance.trainfromfileds(trainingamount, trainUntilConvergence)
-                # motkoinstance.motkolive.trainerTrainUntilConvergence()
-                # motkoinstance.motkolive.saveDS()
-                motkoinstance.saveNNwithname("%s_%d_%s" % (filename.split('_')[0], (loopstrained * trainingamount), filename.split('_')[2]))
+                motkoinstance.saveNNwithname(filenametemp)
     else:
         for _ in range(trainingloops):
-            loopstrained += trainingamount
-            print (loopstrained, trainingamount)
-            motkoinstance.motkolive.setname("%s_%d_%s" % (filename.split('_')[0], (loopstrained * trainingamount), filename.split('_')[2]))
-            # motkoinstance.motkolive.TrainerCreateTrainingset()
-            motkoinstance.trainfromfileds(trainingamount, trainUntilConvergence)
-            motkoinstance.saveNNwithname("%s_%d_%s" % (filename.split('_')[0], (loopstrained * trainingamount), filename.split('_')[2]))
-            motkoinstance.saveNNwithname(filename)
+                loopstrained += trainingamount
+                filenametemp = "%s_%d_%s" % (filename.split('_')[0], (loopstrained), filename.split('_')[2])
+                motkoinstance.motkolive.setname(filenametemp)
+                motkoinstance.trainfromfileds(trainingamount, trainUntilConvergence)
+                motkoinstance.saveNNwithname(filenametemp)
     del motkoinstance
 
 
-def trainmotkos(name, size, hiddenlayeramount, trainUntilConvergence=False, amount=10, trainingloops=100, trainingamount=100, test=False):
+def trainmotkos(filename, size, hiddenlayeramount, trainUntilConvergence=False, amount=10, trainingloops=100, trainingamount=100, test=False):
     trained = 0
     trainers = []
     maxtrainers = 3
@@ -54,11 +57,22 @@ def trainmotkos(name, size, hiddenlayeramount, trainUntilConvergence=False, amou
     del motkoinstance
 
     if(trainUntilConvergence):
-        print ("Training %d %ss with trainUntilConvergence loops %d" % (amount, name, trainingloops))
+        print ("Training %d %s with trainUntilConvergence loops %d" % (amount, filename, trainingloops))
     else:
-        print ("Training %d %ss with training loops %d x training per loop %d" % (amount, name, trainingloops, trainingamount))
+        print ("Training %d %s with training loops %d x training per loop %d" % (amount, filename, trainingloops, trainingamount))
     for i in range(1, amount + 1):
-        p = multiprocessing.Process(target=motkotrainer, args=("%s_%d_%d.pkl" % (name, trainingloops, i), [1024, 768], hiddenlayeramount, trainingloops, trainingamount, trainUntilConvergence, test))
+        print(i)
+        if (os.path.isfile(os.path.join(os.getcwd(), "brains", filename)) is True):
+            print("training only one motko")
+            tempfilename = "%s_%s_%d.pkl" % (filename.split('_')[0], filename.split('_')[1], (int(filename.split('_')[2].split(".")[0])))
+            filename2 = "%s_%s_%d.pkl" % (filename.split('_')[0], filename.split('_')[1], (i + int(filename.split('_')[2].split(".")[0])))
+            p = multiprocessing.Process(target=motkotrainer, args=(tempfilename, size, hiddenlayeramount, trainingloops, trainingamount, filename2, trainUntilConvergence, test))
+            i = amount + 1   # train same motko three times? waste total waste
+            trainers.append(p)
+            p.start()
+            break
+        else:
+            p = multiprocessing.Process(target=motkotrainer, args=("%s_%d_%d.pkl" % (filename.split('_')[0], trainingloops, i), size, hiddenlayeramount, trainingloops, trainingamount, "", trainUntilConvergence, test))
         trainers.append(p)
         p.start()
         childthreads += 1
@@ -82,11 +96,13 @@ if __name__ == "__main__":
     parser.add_argument("--trainingloops", help="How many times Train or TrainUntilConvergence for one motko", type=int)
     parser.add_argument("--trainingamount", help="How many times motko is trained", type=int)
     parser.add_argument("--hiddenlayeramount", help="How many hiddenlayers, default 4", default=10, type=int)
+    parser.add_argument("--motko", help="already created Motko to be used, file name", action="store", dest="motko")
     args = parser.parse_args()
     logging.info(args)
+    print(args)
     if(args.test):
-            trainmotkos("seppo", [1024, 768], hiddenlayeramount=args.hiddenlayeramount, trainUntilConvergence=False, amount=3, trainingloops=3, trainingamount=1, test=args.test)
-    elif(args.amount is not None and args.amount is not None and args.trainingamount is not None):
-        trainmotkos("seppo", [1024, 768], hiddenlayeramount=args.hiddenlayeramount, trainUntilConvergence=args.trainUntilConvergence, amount=args.amount, trainingloops=args.amount, trainingamount=args.trainingamount)
+        trainmotkos("testinakki", [1024, 768], hiddenlayeramount=args.hiddenlayeramount, trainUntilConvergence=False, amount=3, trainingloops=3, trainingamount=1, test=args.test)
+    elif(args.amount is not None and args.amount is not None and args.trainingamount is not None and args.motko is not None):
+        trainmotkos(filename=args.motko, size=[1024, 768], hiddenlayeramount=args.hiddenlayeramount, trainUntilConvergence=args.trainUntilConvergence, amount=args.amount, trainingloops=args.amount, trainingamount=args.trainingamount)
     else:
         parser.print_help()
