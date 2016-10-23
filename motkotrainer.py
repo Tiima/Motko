@@ -19,7 +19,7 @@ def motkotrainer(filename, size, hiddenlayeramount, trainingloops, trainingamoun
         loopstrained = int(filename.split('_')[1])
     else:
         motkoinstance = motko.motkowrapper(filename, size, hiddenlayeramount, False)
-        loopstrained = 1
+        loopstrained = 0
     # self.threadLock.release()trainUntilConvergencetrainUntilConvergence
     if(test):
         for _ in range(trainingloops):
