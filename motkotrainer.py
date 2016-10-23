@@ -107,6 +107,6 @@ if __name__ == "__main__":
     if(args.test):
         trainmotkos("testinakki", [1024, 768], hiddenlayeramount=args.hiddenlayeramount, trainUntilConvergence=False, amount=3, trainingloops=3, trainingamount=1, test=args.test)
     elif(args.amount is not None and args.amount is not None and args.trainingamount is not None and args.motko is not None):
-        trainmotkos(filename=args.motko, size=[1024, 768], hiddenlayeramount=args.hiddenlayeramount, trainUntilConvergence=args.trainUntilConvergence, amount=args.amount, trainingloops=args.amount, trainingamount=args.trainingamount)
+        trainmotkos(filename=args.motko, size=[1024, 768], hiddenlayeramount=args.hiddenlayeramount, trainUntilConvergence=args.trainUntilConvergence, amount=args.amount, trainingloops=args.trainingloops, trainingamount=args.trainingamount)
     else:
         parser.print_help()
