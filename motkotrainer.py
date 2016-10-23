@@ -22,7 +22,8 @@ def motkotrainer(filename, size, hiddenlayeramount, trainingloops, trainingamoun
         loopstrained = 0
     # self.threadLock.release()trainUntilConvergencetrainUntilConvergence
     motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), "Start training\n", 'a+')
-    motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo2(), 'a+')
+    motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo2(), 'r+')
+    motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo3(), 'a+')
     if(test):
         for _ in range(trainingloops):
             loopstrained += trainingamount
@@ -46,6 +47,7 @@ def motkotrainer(filename, size, hiddenlayeramount, trainingloops, trainingamoun
                 motkoinstance.saveNNwithname(filenametemp)
     motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), "Stop training\n", 'a+')
     motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo2(), 'a+')
+    motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo3(), 'a+')
     del motkoinstance
 
 

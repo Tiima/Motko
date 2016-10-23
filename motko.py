@@ -151,10 +151,10 @@ class motko:
         if(test):
             self.printlog("starting to create trainignset")
             sys.stdout.flush()
-            for e in range(1, 11, 3):
-                for fa in range(1, 11, 3):
-                    for fl in range(1, 11, 3):
-                        for fr in range(1, 11, 3):
+            for e in range(1, 11, 4):
+                for fa in range(1, 11, 4):
+                    for fl in range(1, 11, 4):
+                        for fr in range(1, 11, 4):
                             for fc in range(5):
                                 for c in range(5):
                                     for mtc in range(5):
@@ -331,7 +331,9 @@ class motko:
 
     @timing_function
     def saveLog(self, filename, strinki, fileaut):
-        target = open(filename, fileaut)
+        if(os.path.isdir(os.path.join(os.getcwd(), 'logs')) is not True):
+            os.makedirs(os.path.join(os.getcwd(), 'logs'))
+        target = open(os.path.join(os.getcwd(), 'logs', filename), fileaut)
         if (not isinstance(strinki, str)):
             for item in strinki:
                 target.write("%s\n" % item)

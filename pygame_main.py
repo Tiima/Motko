@@ -139,7 +139,8 @@ class PyManMain:
                     # print (self.motkot[k].motkolive.nn.inspect())
                     del self.motkot[k]
                 # for i in range(len(self.motkot) - 1, -1, -1):
-                #    if self.foodblocks[i].collision([self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y], [self.motkot[k].motkolive.size, self.motkot[k].motkolive.size]) == 1:
+                # if (self.motkot[k].motkolive.collision([self.motkot[k].motkolive.X, self.motkot[k].motkolive.Y], [self.motkot[k].motkolive.size, self.motkot[k].motkolive.size]) == 1):
+                # print("kill or sex or flee?")
             textplaceY = 0
 
             for k in range(len(self.motkot)):
