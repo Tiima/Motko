@@ -55,12 +55,12 @@ class motkowrapper:
 
     @timing_function
     def trainfromfileds(self, loops, trainUntilConvergence=False, smallerTS=False):
-        if(test):
+        if(smallerTS):
             filename = "Basic_Test_TrainingSet.ds"
         else:
             filename = "Basic_TrainingSet.ds"
         if(os.path.isfile(os.path.join(self.cwd, filename)) is False):
-            self.motkolive.CreateTrainingset(test)
+            self.motkolive.CreateTrainingset(smallerTS)
         self.motkolive.trainfromfileds(SupervisedDataSet.loadFromFile(filename), loops, trainUntilConvergence)
 
     @timing_function
@@ -147,8 +147,8 @@ class motko:
         # self.printlog("hiddenLayerAmount:{}".format(self.hiddenLayerAmount))
 
     @timing_function
-    def CreateTrainingset(self, test=False):
-        if(test):
+    def CreateTrainingset(self, smallerTS=False):
+        if(smallerTS):
             self.printlog("starting to create trainignset")
             sys.stdout.flush()
             for e in range(1, 11, 4):
@@ -443,15 +443,17 @@ class motko:
 
             if(self.directionvector[self.direction][0] == 0 and self.directionvector[self.direction][1] == 0):
                 self.randmovevector()
-            self.speed = self.move * 3
+
+            self.speed = self.move * 10
+
             self.X += self.directionvector[self.direction][0] * int(self.speed)
             self.Y += self.directionvector[self.direction][1] * int(self.speed)
-            self.seteyes()
+
             self.shadow.append([self.X, self.Y])
             if len(self.shadow) >= self.shadowlength:
                 del self.shadow[0]
 
-            if(self.turnleft > 0.1 or self.turnright > 0.1):  # othervice we would turn all the time , change in nessesary
+            if(self.turnleft > 0.1 or self.turnright > 0.1):  # othervice we would turn all the time, change in nessesary
                 if(self.turnleft > self.turnright):  # move left
                     if (self.direction % 2 == 0):
                         if(self.direction == 0):
@@ -462,7 +464,6 @@ class motko:
                         self.direction = 7
                     else:
                         self.direction -= 1
-                    self.seteyes()
                 else:  # move right
                     if (self.direction % 2 == 0):
                         if(self.direction == 6):
@@ -473,7 +474,8 @@ class motko:
                         self.direction = 0
                     else:
                         self.direction += 1
-                    self.seteyes()
+
+            self.seteyes()
 
             # motko size
             if(self.energy < 0):
@@ -481,7 +483,7 @@ class motko:
             elif(self.energy > 2):
                 self.size = 2
             else:
-                self.size = int(self.energy * 6)
+                self.size = int(self.energy * 3)
                 if(self.size < 2):
                     self.size = 2
 
