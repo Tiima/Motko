@@ -70,7 +70,7 @@ def trainmotkos(filename, size, hiddenlayeramount, trainUntilConvergence=False, 
             p.start()
             break
         else:
-            p = multiprocessing.Process(target=motkotrainer, args=("%s_%d_%d.pkl" % (filename.split('_')[0], trainingloops, i), size, hiddenlayeramount, trainingloops, trainingamount, "", trainUntilConvergence, test))
+            p = multiprocessing.Process(target=motkotrainer, args=("%s_%d_%d.pkl" % (filename.split('_')[0], trainingloops, i), size, hiddenlayeramount, trainingloops, trainingamount, "", trainUntilConvergence, smallerTS))
         trainers.append(p)
         p.start()
         childthreads += 1
