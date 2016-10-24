@@ -151,15 +151,30 @@ class motko:
         if(smallerTS):
             self.printlog("starting to create trainignset")
             sys.stdout.flush()
-            for e in range(1, 11, 4):
-                for fa in range(1, 11, 4):
-                    for fl in range(1, 11, 4):
-                        for fr in range(1, 11, 4):
+            # inputs are: energy 0, food avail 1, food left 2, food right 3, food color 4, color 5, meeting motko color 6,
+            e = -0.40
+            fa = -0.40
+            fl = -0.40
+            fr = -0.40
+            for _ in range(7):
+                e = e + 0.20
+                fa = -0.20
+                fl = -0.20
+                fr = -0.20
+                for _ in range(6):
+                    fa = fa + 0.20
+                    fl = -0.20
+                    fr = -0.20
+                    for _ in range(6):
+                        fl = fl + 0.20
+                        fr = -0.20
+                        for _ in range(6):
+                            fr = fr + 0.20
                             for fc in range(5):
                                 for c in range(5):
                                     for mtc in range(5):
-                                        # self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])))))
-                                        self.ds.addSample([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc], self.gettraining2([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc]))
+                                        self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e, fa, fl, fr, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc]))))))
+                                        self.ds.addSample([e, fa, fl, fr, fc, c, mtc], self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc])))
             self.saveDS("Basic_Test_TrainingSet.ds")
             self.printlog("Create trainignset done")
             self.printlog("starting to create trainignset")
@@ -172,8 +187,8 @@ class motko:
                             for fc in range(5):
                                 for c in range(5):
                                     for mtc in range(5):
-                                        # self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])))))
-                                        self.ds.addSample([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc], self.gettraining2([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc]))
+                                        # self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc])))))
+                                        self.ds.addSample([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc], self.gettraining2([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc])))
             self.saveDS("Basic_TrainingSet.ds")
             self.printlog("Create trainignset done")
 
@@ -222,11 +237,11 @@ class motko:
 
     @timing_function
     def responce(self, liveinput):
-        self.trainingresult = self.gettraining2(liveinput)
+        self.trainingresult = self.gettraining2(liveinput, self.nn.activate(liveinput))
         self.ds.addSample(liveinput, self.trainingresult)
         if(self.trainsteps == self.aftermovestrain):
-            self.trainer = BackpropTrainer(self.nn, self.ds, learningrate=0.1, momentum=0.1)  # small learning rate should it be bigger?
-            # self.trainer.trainEpochs(1)
+            self.trainer = BackpropTrainer(self.nn, self.ds, learningrate=0.6, momentum=0.1)  # small learning rate should it be bigger?
+            self.trainer.trainEpochs(1)
             # self.currenterror = self.trainer.train()
             # self.printlog("trainUntilConvergence1: %s" % (self.currenterror))
             # for  _ in range(10):
@@ -345,60 +360,60 @@ class motko:
     def seteyes(self):
         if(self.directionvector[self.direction][0] >= 1 and self.directionvector[self.direction][1] == 0):
             self.eyeleftplace[0] = self.X + self.size
-            self.eyeleftplace[1] = self.Y - (self.size + 10)
+            self.eyeleftplace[1] = self.Y - (self.size + 15)
             self.eyerightplace[0] = self.X + self.size
             self.eyerightplace[1] = self.Y + self.size + self.size
-            self.eyesightsizeleft = [self.size, 10]
-            self.eyesightsizeright = [self.size, 10]
+            self.eyesightsizeleft = [self.size, 15]
+            self.eyesightsizeright = [self.size, 15]
         elif(self.directionvector[self.direction][0] >= 1 and self.directionvector[self.direction][1] >= 1):
             self.eyeleftplace[0] = self.X + self.size + self.size
             self.eyeleftplace[1] = self.Y
             self.eyerightplace[0] = self.X
             self.eyerightplace[1] = self.Y + (self.size + self.size)
-            self.eyesightsizeleft = [10, self.size]
-            self.eyesightsizeright = [self.size, 10]
+            self.eyesightsizeleft = [15, self.size]
+            self.eyesightsizeright = [self.size, 15]
         elif(self.directionvector[self.direction][0] == 0 and self.directionvector[self.direction][1] >= 1):
             self.eyeleftplace[0] = self.X + (self.size + self.size)
             self.eyeleftplace[1] = self.Y + self.size
-            self.eyerightplace[0] = self.X - (self.size + 10)
+            self.eyerightplace[0] = self.X - (self.size + 15)
             self.eyerightplace[1] = self.Y + self.size
-            self.eyesightsizeleft = [10, self.size]
-            self.eyesightsizeright = [10, self.size]
+            self.eyesightsizeleft = [15, self.size]
+            self.eyesightsizeright = [15, self.size]
         elif(self.directionvector[self.direction][0] <= -1 and self.directionvector[self.direction][1] >= 1):
-            self.eyeleftplace[0] = self.X - (self.size + 10)
+            self.eyeleftplace[0] = self.X - (self.size + 15)
             self.eyeleftplace[1] = self.Y
             self.eyerightplace[0] = self.X
             self.eyerightplace[1] = self.Y + (self.size + self.size)
-            self.eyesightsizeleft = [10, self.size]
-            self.eyesightsizeright = [self.size, 10]
+            self.eyesightsizeleft = [15, self.size]
+            self.eyesightsizeright = [self.size, 15]
         elif(self.directionvector[self.direction][0] <= -1 and self.directionvector[self.direction][1] == 0):
             self.eyeleftplace[0] = self.X - self.size
-            self.eyeleftplace[1] = self.Y - (self.size + 10)
+            self.eyeleftplace[1] = self.Y - (self.size + 15)
             self.eyerightplace[0] = self.X - self.size
             self.eyerightplace[1] = self.Y + (self.size + self.size)
-            self.eyesightsizeleft = [self.size, 10]
-            self.eyesightsizeright = [self.size, 10]
+            self.eyesightsizeleft = [self.size, 15]
+            self.eyesightsizeright = [self.size, 15]
         elif(self.directionvector[self.direction][0] <= -1 and self.directionvector[self.direction][1] <= -1):
             self.eyeleftplace[0] = self.X
-            self.eyeleftplace[1] = self.Y - (self.size + 10)
-            self.eyerightplace[0] = self.X - (self.size + 10)
+            self.eyeleftplace[1] = self.Y - (self.size + 15)
+            self.eyerightplace[0] = self.X - (self.size + 15)
             self.eyerightplace[1] = self.Y
-            self.eyesightsizeleft = [self.size, 10]
-            self.eyesightsizeright = [10, self.size]
+            self.eyesightsizeleft = [self.size, 15]
+            self.eyesightsizeright = [15, self.size]
         elif(self.directionvector[self.direction][0] == 0 and self.directionvector[self.direction][1] <= -1):
-            self.eyeleftplace[0] = self.X - (self.size + 10)
+            self.eyeleftplace[0] = self.X - (self.size + 15)
             self.eyeleftplace[1] = self.Y - self.size
             self.eyerightplace[0] = self.X + (self.size + self.size)
             self.eyerightplace[1] = self.Y - self.size
-            self.eyesightsizeleft = [10, self.size]
-            self.eyesightsizeright = [10, self.size]
+            self.eyesightsizeleft = [15, self.size]
+            self.eyesightsizeright = [15, self.size]
         elif(self.directionvector[self.direction][0] >= 1 and self.directionvector[self.direction][1] <= -1):
             self.eyeleftplace[0] = self.X
-            self.eyeleftplace[1] = self.Y - (self.size + 10)
+            self.eyeleftplace[1] = self.Y - (self.size + 15)
             self.eyerightplace[0] = self.X + (self.size + self.size)
             self.eyerightplace[1] = self.Y
-            self.eyesightsizeleft = [self.size, 10]
-            self.eyesightsizeright = [10, self.size]
+            self.eyesightsizeleft = [self.size, 15]
+            self.eyesightsizeright = [15, self.size]
 
     @timing_function
     def reinit(self):
@@ -407,7 +422,7 @@ class motko:
         self.Y = random.randint(0, self.eartsize[1])
         self.randmovevector()
         self.seteyes()
-        self.energy = 2
+        self.energy = 1
         self.shadow[:] = []
         self.movecount = 0
         self.startime = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
@@ -423,7 +438,7 @@ class motko:
             neuraloutputs = self.responce([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])
             logging.info("{}: {}".format([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor], neuraloutputs))
             if(dontPrintInfo):  # todo change that you can see output names
-                self.printlog("\n%s\n%s\n%s %f: %d" % ("eat\t\teata\tmove\ttleft\ttright\tkill\tflee\tsex", "\t".join(str(x) for x in self.roundfloat(self.trainingresult)), "\t".join(str(x) for x in self.roundfloat(neuraloutputs)), self.currenterror, len(self.ds)))
+                self.printlog("\n%s\n%s: %f: %f\n%s: %f: %d" % ("eat\t\teata\tmove\ttleft\ttright\tkill\tflee\tsex", "\t".join(str(x) for x in self.roundfloat(self.trainingresult)), self.foodavail, self.energy, "\t".join(str(x) for x in self.roundfloat(neuraloutputs)), self.currenterror, len(self.ds)))
                 # self.printlog("\n%s: \n%s: %f: %d" % (" ".join(str(x) for x in self.roundfloat([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])), " ".join(str(x) for x in self.roundfloat(neuraloutputs)), self.currenterror, len(self.ds)))
 
             self.eat = neuraloutputs[0]
@@ -436,8 +451,8 @@ class motko:
             self.sex = neuraloutputs[7]
             # outputs are: eat 0, eat amount 1, move 2, turn left 4, turn tight 5, kill 6, flee 7, sex 8
             # eating
-            if (self.eat != 0):
-                if(self.foodavail != 0):
+            if (self.eat > 0):
+                if(self.foodavail > 0):
                     self.energy = self.energy + self.eatamount
 
             self.energy = self.energy - self.consumption
@@ -480,13 +495,11 @@ class motko:
 
             # motko size
             if(self.energy < 0):
-                self.size = 2
-            elif(self.energy > 2):
-                self.size = 2
+                self.size = int(0.001 * 6)
+            elif(self.energy > 1.3):
+                self.size = int(1.3 * 6)
             else:
-                self.size = int(self.energy * 3)
-                if(self.size < 2):
-                    self.size = 2
+                self.size = int(self.energy * 6)
 
             if(self.X >= self.eartsize[0]):
                 self.X = 0
@@ -639,9 +652,9 @@ class motko:
         print("%s %s:%s" % (str(datetime.datetime.now()), self.filename, message))
 
     @timing_function
-    def eatcalc(self, inputs):
+    def eatcalc(self, inputs, neuronoutputs=None):
         # EAT energy 0, food avail 1, food left 2, food right 3, food color 4, color 5,
-        outputs = [0, 0, 0.1, 0, 0]  # default response
+        outputs = [99, 99, 99, 99, 99]  # default response
         if(inputs[0] < 0.75):  # hungry
             if(inputs[1] < inputs[2] or (inputs[4] == inputs[5] and inputs[4] != 4)):  # food in left more than front or food color is different than in your color meaning eatable
                 # self.printlog("food in left more than front or food color is different than in your color meaning eatable")
@@ -695,12 +708,23 @@ class motko:
             outputs[2] = 0.75
         if(0.0 > inputs[0]):  # hungry)
             outputs[2] = 1.25
+
+        if(outputs[3] != 1 and outputs[4] != 1):  # dont turn
+            outputs[3] = 0
+            outputs[4] = 0
+        if(inputs[4] == inputs[5] or inputs[4] == 4):  # definately dont eat
+            outputs[0] = 0  # dont eat
+            outputs[1] = 0  # dont eat anything
+
+        for i in range(len(outputs)):
+            if(outputs[i] == 99 and neuronoutputs is not None):  # if no matter use what you got from ANN
+                outputs[i] = neuronoutputs[i]
         return outputs
 
     @timing_function
-    def contactcalc(self, inputs):
+    def contactcalc(self, inputs, neuronoutputs=None):
         # if same color as you then sex or flee if different color flee or kill. by killing you get enegry what other has
-        outputs = [0, 0, 0]  # default response
+        outputs = [99, 99, 99]  # default response
         if(inputs[5] == inputs[6]):  # same so flee or sex, energyamount defines what
             if(inputs[0] > 0.50):  # enought food to sex
                 outputs[2] = inputs[0]
@@ -711,14 +735,19 @@ class motko:
                 outputs[1] = inputs[0]
             elif(inputs[6] != 4):  # hungry so fight
                 outputs[0] = 1 - inputs[0]
+
+        for i in range(len(outputs)):
+            if(outputs[i] == 99 and neuronoutputs is not None):
+                outputs[i] = neuronoutputs[i + 4]
+
         return outputs
 
     @timing_function
-    def gettraining2(self, inputs):
+    def gettraining2(self, inputs, neuronoutputs=None):
         # inputs are: energy 0, food avail 1, food left 2, food right 3, food color 4, color 5, meeting motko color 6,
         # outputs are: eat 0, eat amount 1, move 2, turn left 3, turn tight 4, kill 5, flee 6, sex 7
         # divide trainign to smaller parts
-        eatoutputs = self.eatcalc(inputs)  # eat, eat amount, move, turn left, turn tight
-        contactouputs = self.contactcalc(inputs)
+        eatoutputs = self.eatcalc(inputs, neuronoutputs)  # eat 0, eat amount 1, move 2, turn left 3, turn tight 4
+        contactouputs = self.contactcalc(inputs, neuronoutputs)  # kill 5, flee 6, sex 7
         # print (inputs, (eatoutputs+contactouputs))
         return eatoutputs + contactouputs

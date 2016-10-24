@@ -59,26 +59,25 @@ def trainmotkos(filename, size, hiddenlayeramount, trainUntilConvergence=False, 
         print ("Training %d %s with trainUntilConvergence loops %d" % (amount, filename, trainingloops))
     else:
         print ("Training %d %s with training loops %d x training per loop %d" % (amount, filename, trainingloops, trainingamount))
-    for i in range(1, amount + 1):
-        if (os.path.isfile(os.path.join(os.getcwd(), "brains", filename)) is True):
-            print("training only one motko")
-            tempfilename = "%s_%s_%d.pkl" % (filename.split('_')[0], filename.split('_')[1], (int(filename.split('_')[2].split(".")[0])))
-            filename2 = "%s_%s_%d.pkl" % (filename.split('_')[0], filename.split('_')[1], (i + int(filename.split('_')[2].split(".")[0])))
-            p = multiprocessing.Process(target=motkotrainer, args=(tempfilename, size, hiddenlayeramount, trainingloops, trainingamount, filename2, trainUntilConvergence, smallerTS))
-            i = amount + 1   # train same motko three times? waste total waste
-            trainers.append(p)
-            p.start()
-            break
-        else:
-            p = multiprocessing.Process(target=motkotrainer, args=("%s_%d_%d.pkl" % (filename.split('_')[0], trainingloops, i), size, hiddenlayeramount, trainingloops, trainingamount, "", trainUntilConvergence, smallerTS))
+    if (os.path.isfile(os.path.join(os.getcwd(), "brains", filename)) is True):
+        print("training only one motko")
+        tempfilename = "%s_%s_%d.pkl" % (filename.split('_')[0], filename.split('_')[1], (int(filename.split('_')[2].split(".")[0])))
+        filename2 = "%s_%s_%d.pkl" % (filename.split('_')[0], filename.split('_')[1], (i + int(filename.split('_')[2].split(".")[0])))
+        p = multiprocessing.Process(target=motkotrainer, args=(tempfilename, size, hiddenlayeramount, trainingloops, trainingamount, filename2, trainUntilConvergence, smallerTS))
+        i = amount + 1   # train same motko three times? waste total waste
         trainers.append(p)
         p.start()
-        childthreads += 1
-        trained += 1
-        if(childthreads == maxtrainers):
-            for t in trainers:
-                t.join()
-                childthreads = 0
+    else:
+        for i in range(1, amount + 1):
+            p = multiprocessing.Process(target=motkotrainer, args=("%s_%d_%d.pkl" % (filename.split('_')[0], trainingloops, i), size, hiddenlayeramount, trainingloops, trainingamount, "", trainUntilConvergence, smallerTS))
+            trainers.append(p)
+            p.start()
+            childthreads += 1
+            trained += 1
+            if(childthreads == maxtrainers):
+                for t in trainers:
+                    t.join()
+                    childthreads = 0
     for t in trainers:
         t.join()
     print (amount, trained)

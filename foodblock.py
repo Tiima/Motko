@@ -42,8 +42,8 @@ class foodblock:
     def calculateFoodamount(self, eated):
         self.foodamount = self.foodamount - eated
         if(self.foodamount > 0):
-            self.size[0] = self.size[0] + int(self.foodamount * 6)
-            self.size[1] = self.size[1] + int(self.foodamount * 6)
+            self.size[0] = 2 + int(self.foodamount * 6)
+            self.size[1] = 2 + int(self.foodamount * 6)
 
     def getSize1(self):
         return self.size[0]
