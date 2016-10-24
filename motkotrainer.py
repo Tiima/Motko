@@ -62,7 +62,7 @@ def trainmotkos(filename, size, hiddenlayeramount, trainUntilConvergence=False, 
     if (os.path.isfile(os.path.join(os.getcwd(), "brains", filename)) is True):
         print("training only one motko")
         tempfilename = "%s_%s_%d.pkl" % (filename.split('_')[0], filename.split('_')[1], (int(filename.split('_')[2].split(".")[0])))
-        filename2 = "%s_%s_%d.pkl" % (filename.split('_')[0], filename.split('_')[1], (i + int(filename.split('_')[2].split(".")[0])))
+        filename2 = "%s_%s_%d.pkl" % (filename.split('_')[0], filename.split('_')[1], (1 + int(filename.split('_')[2].split(".")[0])))
         p = multiprocessing.Process(target=motkotrainer, args=(tempfilename, size, hiddenlayeramount, trainingloops, trainingamount, filename2, trainUntilConvergence, smallerTS))
         i = amount + 1   # train same motko three times? waste total waste
         trainers.append(p)
