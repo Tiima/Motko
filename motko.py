@@ -660,21 +660,21 @@ class motko:
                 # self.printlog("food in left more than front or food color is different than in your color meaning eatable")
                 outputs[0] = 0  # dont eat
                 outputs[1] = 0  # dont eat anything
-                outputs[2] = 0  # move
+                outputs[2] = 0.25  # move
                 outputs[3] = 1  # turn left
                 outputs[4] = 0  # do not turn right
             elif(inputs[1] < inputs[3] or (inputs[4] == inputs[5] and inputs[4] != 4)):  # food in right more than front
                 # self.printlog(" # food in right more than front")
                 outputs[0] = 0  # dont eat
                 outputs[1] = 0  # dont eat anything
-                outputs[2] = 0  # move
+                outputs[2] = 0.25  # move
                 outputs[3] = 0  # do not turn left
                 outputs[4] = 1  # turn right
             elif(inputs[4] == inputs[5] and inputs[1] != 0):  # food is same color dont eat it will kill you
                 # self.printlog("# food is same color dont eat it will kill you")
                 outputs[0] = 0  # dont eat
                 outputs[1] = 0  # dont eat anything
-                outputs[2] = 0  # move
+                outputs[2] = 0.25  # move
                 outputs[3] = 1  # turn right we prefer left
                 outputs[4] = 0  # do not turn right
             elif(inputs[4] != inputs[5] and inputs[1] != 0):  # food is different color than you, it is eatable
@@ -709,6 +709,9 @@ class motko:
         if(0.0 > inputs[0]):  # hungry)
             outputs[2] = 1.25
 
+        if(inputs[0] >= 1):  # full do not eat
+            outputs[0] = 0  # dont eat
+            outputs[1] = 0  # dont eat anything
         if(outputs[3] != 1 and outputs[4] != 1):  # dont turn
             outputs[3] = 0
             outputs[4] = 0
