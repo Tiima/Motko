@@ -18,14 +18,11 @@ from pybrain.structure import SoftmaxLayer
 from pybrain.structure import FullConnection
 from pybrain.structure import FeedForwardNetwork
 from common import timing_function
-
-"""
-Motko "tuo oman tiensa kulkia"
-
-"""
+import shutil
 
 
 class motkowrapper:
+    """Motko "tuo oman tiensa kulkia"""
 
     @timing_function
     def __init__(self, filename, eartsize, num_hiddeLayers, loadfromfile=False, test=False):
@@ -42,6 +39,12 @@ class motkowrapper:
                 os.remove(os.path.join(self.cwd, 'brains', self.filename))
         else:
             self.motkolive = motko(self.filename, eartsize, num_hiddeLayers, test)
+
+    @timing_function
+    def setNotViable(self):
+        if(os.path.isdir(os.path.join(os.getcwd(), 'noVianble')) is not True):
+            os.makedirs(os.path.join(os.getcwd(), 'noVianble'))
+        shutil.move(os.path.join(os.getcwd(), 'brains', self.motkolive.filename), os.path.join(os.getcwd(), 'noVianble', self.motkolive.filename))
 
     @timing_function
     def checkiftrainingsetexits(self, test=False):

@@ -107,6 +107,7 @@ class PyManMain:
             self.FoodBlockID.append(None)
         print len(self.FoodBlockID)
         print len(self.motkot)
+        printmotko = 99
         # deletemotkoindex = []
 
         while 1:
@@ -121,25 +122,35 @@ class PyManMain:
                         elif (event.key == pygame.K_LEFT):
                             dontprintdata = True
                         elif (event.key == pygame.K_UP):
-                            # for k in range(self.motkotamount):
-                            #     print (self.motkot[k].motkolive.nn.inspect())
                             printsnapshotinfo = True
                         elif (event.key == pygame.K_DOWN):
-                            # if(self.sleeptime <= 0.01):
-                            #    self.sleeptime = 0.01
-                            # else:
-                            #    self.sleeptime -= 0.01
-                            print ("slooptime")
-                            # if(step == True):
-                            #     step = False
-                            # else:
-                            #     step = True
-            # print (len(self.motkot), self.hiddenlayer)
+                            printmotko = 99
+                        elif (event.key == pygame.K_1):
+                            printmotko = 1
+                        elif (event.key == pygame.K_2):
+                            printmotko = 2
+                        elif (event.key == pygame.K_3):
+                            printmotko = 3
+                        elif (event.key == pygame.K_4):
+                            printmotko = 4
+                        elif (event.key == pygame.K_5):
+                            printmotko = 5
+                        elif (event.key == pygame.K_6):
+                            printmotko = 6
+                        elif (event.key == pygame.K_7):
+                            printmotko = 7
+                        elif (event.key == pygame.K_8):
+                            printmotko = 8
+                        elif (event.key == pygame.K_9):
+                            printmotko = 9
+                        elif (event.key == pygame.K_0):
+                            printmotko = 0
             for k in range(len(self.motkot) - 1, -1, -1):
                 # print (self.motkot[k].motkolive.returnname())
                 status = self.motkot[k].motkolive.areyouallive()
                 if status[0] == "dood" or status[0] == "viable NN":
                     last_steps = self.motkot[k].motkolive.getliveinfo()
+                    self.motkot[k].setNotViable()
                     print ("!:", self.motkot[k].motkolive.getname(), status, self.motkot[k].motkolive.getliveinfo())
                     # print (self.motkot[k].motkolive.nn.inspect())
                     del self.motkot[k]
@@ -165,7 +176,14 @@ class PyManMain:
                         self.motkot[k].motkolive.foodright(self.foodblocks[i].returnfoodamount())
                         # print ("right hit!")
 
-                self.motkot[k].motkolive.live(dontprintdata, test=self.test)
+                if(printmotko != 99):
+                    dontprintdata = False
+                    if(k == printmotko):
+                        self.motkot[k].motkolive.live(True, test=self.test)
+                    else:
+                        self.motkot[k].motkolive.live(False, test=self.test)
+                else:
+                    self.motkot[k].motkolive.live(dontprintdata, test=self.test)
                 didoueat = self.motkot[k].motkolive.didoueat()
                 if(len(self.FoodBlockID) > 0):
                     if(didoueat > 0 and self.FoodBlockID[k] is not None):
