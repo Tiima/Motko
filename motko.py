@@ -44,7 +44,7 @@ class motkowrapper:
     def setNotViable(self):
         if(os.path.isdir(os.path.join(os.getcwd(), 'noVianble')) is not True):
             os.makedirs(os.path.join(os.getcwd(), 'noVianble'))
-        shutil.move(os.path.join(os.getcwd(), 'brains', self.motkolive.filename), os.path.join(os.getcwd(), 'noVianble', self.motkolive.filename))
+        shutil.move(os.path.join(os.getcwd(), 'brains', self.motkolive.filename), os.path.join(os.getcwd(), 'noVianble', '{}.movecnt{}.energy{}'.format(self.motkolive.filename, self.movecount, self.energy)))
 
     @timing_function
     def checkiftrainingsetexits(self, test=False):
@@ -317,7 +317,7 @@ class motko:
         self.movecount = 0
         self.movememory = []
         self.trainsteps = 0
-        self.aftermovestrain = 5000
+        self.aftermovestrain = 100
         self.randomcount = random.randint(5, 50)
 
         self.size = (5 + int(self.energy * 6))
@@ -346,6 +346,7 @@ class motko:
         self.trainings = 0
         self.currenterror = 10
         self.trainingresult = []
+        self.doodReason = ""
 
     @timing_function
     def saveLog(self, filename, strinki, fileaut):
@@ -441,7 +442,7 @@ class motko:
             neuraloutputs = self.responce([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])
             logging.info("{}: {}".format([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor], neuraloutputs))
             if(dontPrintInfo):  # todo change that you can see output names
-                self.printlog("\n%s\n%s: %f: %f\n%s: %f: %d" % ("eat\t\teata\tmove\ttleft\ttright\tkill\tflee\tsex", "\t".join(str(x) for x in self.roundfloat(self.trainingresult)), self.foodavail, self.energy, "\t".join(str(x) for x in self.roundfloat(neuraloutputs)), self.currenterror, len(self.ds)))
+                self.printlog("\n%s\n%s: %f: %f: %d\n%s: %f: %d" % ("eat\t\teata\tmove\ttleft\ttright\tkill\tflee\tsex", "\t".join(str(x) for x in self.roundfloat(self.trainingresult)), self.foodavail, self.energy, self.colornumber, "\t".join(str(x) for x in self.roundfloat(neuraloutputs)), self.currenterror, len(self.ds)))
                 # self.printlog("\n%s: \n%s: %f: %d" % (" ".join(str(x) for x in self.roundfloat([self.energy, self.foodavail, self.foodInLeft, self.foodInRight, self.foodcolor, self.colornumber, self.meetinmotkocolor])), " ".join(str(x) for x in self.roundfloat(neuraloutputs)), self.currenterror, len(self.ds)))
 
             self.eat = neuraloutputs[0]
@@ -457,6 +458,10 @@ class motko:
             if (self.eat > 0):
                 if(self.foodavail > 0):
                     self.energy = self.energy + self.eatamount
+                if(self.foodcolor == self.colornumber):  # eatinmg wrong food
+                    print ("dood by eating wrong color {} vs {}".format(self.foodcolor, self.colornumber))
+                    self.doodReason = "exception dood"
+                    return 1
 
             self.energy = self.energy - self.consumption
 
@@ -605,17 +610,17 @@ class motko:
             if(diff.total_seconds() > 120):
                 # self.saveLog(self.filename, self.nn.inspectTofile(), 'a+')
                 return (["viable NN"])
-            if(self.move == "exception dood"):
-                return (["dood", self.move])
+            if(self.doodReason == "exception dood"):
+                return (["dood"])
             return ["ok"]
         else:
-            if(self.energy < -10.00 or self.energy > 10.00):
+            if(self.energy < -5.00 or self.energy > 5.00):
                 #  self.energy = 2
                 return ["dood"]
             elif (self.trainings == 1000):
                 return ["dood"]
-            if(self.move == "exception dood"):
-                return (["dood", self.move])
+            if(self.doodReason == "exception dood"):
+                return (["dood"])
             return ["ok"]
 
     @timing_function
