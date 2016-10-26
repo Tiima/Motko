@@ -176,7 +176,7 @@ class motko:
                             for fc in range(5):
                                 for c in range(5):
                                     for mtc in range(5):
-                                        self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e, fa, fl, fr, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc]))))))
+                                        #self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e, fa, fl, fr, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc]))))))
                                         self.ds.addSample([e, fa, fl, fr, fc, c, mtc], self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc])))
             self.saveDS("Basic_Test_TrainingSet.ds")
             self.printlog("Create trainignset done")
@@ -244,20 +244,18 @@ class motko:
         self.ds.addSample(liveinput, self.trainingresult)
         if(self.trainsteps == self.aftermovestrain):
             self.trainer = BackpropTrainer(self.nn, self.ds, learningrate=0.6, momentum=0.1)  # small learning rate should it be bigger?
-            self.trainer.trainEpochs(1)
+            # self.trainer.trainEpochs(1)
             # self.currenterror = self.trainer.train()
             # self.printlog("trainUntilConvergence1: %s" % (self.currenterror))
-            # for  _ in range(10):
-            #    self.trainer.trainUntilConvergence()
+            for _ in range(10):
+                self.trainer.trainUntilConvergence()
             self.currenterror = self.trainer.train()
             # self.printlog("curren error {}".format(self.currenterror))
             # self.printlog("%s: %s: %s" % (" ".join(str(x) for x in self.roundfloat(liveinput)), " ".join(str(x) for x in self.roundfloat(self.trainingresult)), " ".join(str(x) for x in self.roundfloat(self.nn.activate(liveinput)))))
             self.trainsteps = 0
             self.trainings += 1
-        # if(len(self.ds) == self.aftermovestrain):
-        #        self.ds.saveToFile("ds_save_%s_%d.ds" % (self.filename, len(self.ds)))
-        #        self.printlog("saved ds_save_%s_%d.ds" % (self.filename, len(self.ds)))
-        #        self.aftermovestrain += self.aftermovestrain
+        if(len(self.ds) == 50000):
+            self.ds.clear()
         return self.nn.activate(liveinput)
 
     @timing_function
