@@ -176,7 +176,7 @@ class motko:
                             for fc in range(5):
                                 for c in range(5):
                                     for mtc in range(5):
-                                        #self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e, fa, fl, fr, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc]))))))
+                                        # self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e, fa, fl, fr, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc]))))))
                                         self.ds.addSample([e, fa, fl, fr, fc, c, mtc], self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc])))
             self.saveDS("Basic_Test_TrainingSet.ds")
             self.printlog("Create trainignset done")
