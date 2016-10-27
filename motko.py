@@ -44,7 +44,7 @@ class motkowrapper:
     def setNotViable(self):
         if(os.path.isdir(os.path.join(os.getcwd(), 'noVianble')) is not True):
             os.makedirs(os.path.join(os.getcwd(), 'noVianble'))
-        shutil.move(os.path.join(os.getcwd(), 'brains', self.motkolive.filename), os.path.join(os.getcwd(), 'noVianble', '{}.movecnt{}.energy{}'.format(self.motkolive.filename, self.movecount, self.energy)))
+        shutil.move(os.path.join(os.getcwd(), 'brains', self.motkolive.filename), os.path.join(os.getcwd(), 'noVianble', '{}.movecnt{}.energy{}'.format(self.motkolive.filename, self.motkolive.movecount, self.motkolive.energy)))
 
     @timing_function
     def checkiftrainingsetexits(self, test=False):
@@ -155,28 +155,28 @@ class motko:
             self.printlog("starting to create trainignset")
             sys.stdout.flush()
             # inputs are: energy 0, food avail 1, food left 2, food right 3, food color 4, color 5, meeting motko color 6,
-            e = -0.40
-            fa = -0.40
-            fl = -0.40
-            fr = -0.40
-            for _ in range(7):
-                e = e + 0.20
+            e = -0.30
+            fa = -0.30
+            fl = -0.30
+            fr = -0.30
+            for _ in range(5):
+                e = e + 0.25
                 fa = -0.20
                 fl = -0.20
                 fr = -0.20
-                for _ in range(6):
-                    fa = fa + 0.20
+                for _ in range(5):
+                    fa = fa + 0.25
                     fl = -0.20
                     fr = -0.20
-                    for _ in range(6):
-                        fl = fl + 0.20
+                    for _ in range(5):
+                        fl = fl + 0.25
                         fr = -0.20
                         for _ in range(6):
-                            fr = fr + 0.20
+                            fr = fr + 0.25
                             for fc in range(5):
                                 for c in range(5):
                                     for mtc in range(5):
-                                        # self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e, fa, fl, fr, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc]))))))
+                                        self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e, fa, fl, fr, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc]))))))
                                         self.ds.addSample([e, fa, fl, fr, fc, c, mtc], self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc])))
             self.saveDS("Basic_Test_TrainingSet.ds")
             self.printlog("Create trainignset done")
@@ -201,6 +201,7 @@ class motko:
             self.printlog("before", self.trainer.train())
             sys.stdout.flush()
             self.trainer.trainUntilConvergence(validationProportion=0.2)
+        self.currenterror = self.trainer.train()
         self.printlog("after", self.trainer.train())
         sys.stdout.flush()
 
@@ -211,6 +212,7 @@ class motko:
             self.trainer.train()  # , self.nn.params)
 
         self.printlog(self.trainer.train())
+        self.currenterror = self.trainer.train()
         sys.stdout.flush()
 
     @timing_function
@@ -247,14 +249,16 @@ class motko:
             # self.trainer.trainEpochs(1)
             # self.currenterror = self.trainer.train()
             # self.printlog("trainUntilConvergence1: %s" % (self.currenterror))
-            for _ in range(10):
+            if(self.test is not True):
+                print (self.ds)
+            for _ in range(50):
                 self.trainer.trainUntilConvergence()
             self.currenterror = self.trainer.train()
             # self.printlog("curren error {}".format(self.currenterror))
             # self.printlog("%s: %s: %s" % (" ".join(str(x) for x in self.roundfloat(liveinput)), " ".join(str(x) for x in self.roundfloat(self.trainingresult)), " ".join(str(x) for x in self.roundfloat(self.nn.activate(liveinput)))))
             self.trainsteps = 0
             self.trainings += 1
-        if(len(self.ds) == 50000):
+        if(len(self.ds) == 5000):
             self.ds.clear()
         return self.nn.activate(liveinput)
 
@@ -596,6 +600,7 @@ class motko:
             returndata += "\thidden{}:{}, neurons {}\n{}\n".format(i, self.hiddenlayers[i], self.hiddenLayerNeuronsAmount[i], self.connections[i + 1].params)
 
         returndata += "outLayer:{}\n{}\n".format(self.nn["out"], self.connections[len(self.connections) - 1].params)  # self.outLayer
+        returndata += "error:{}\n".format(self.currenterror)
         return returndata
 
     @timing_function
