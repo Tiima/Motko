@@ -21,8 +21,8 @@ def loadmotkos(path, amount, trainingloops, size, hiddenlayers, loadfromfile, te
             motkoinstance.motkolive.setname(motkoslist[k])
             print("loading motko", motkoinstance.motkolive.getname())
             motkoinstance.motkolive.reinit()
-            if(test):
-                os.remove(os.path.join(path, 'brains', motkoslist[k]))
+            # if(test):
+            #    os.remove(os.path.join(path, 'brains', motkoslist[k]))
             loadedmotkos.append(motkoinstance)
             if(len(loadedmotkos) >= amount):
                 return loadedmotkos

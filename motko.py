@@ -156,9 +156,9 @@ class motko:
             sys.stdout.flush()
             # inputs are: energy 0, food avail 1, food left 2, food right 3, food color 4, color 5, meeting motko color 6,
             e = -0.30
-            fa = -0.30
-            fl = -0.30
-            fr = -0.30
+            fa = -0.20
+            fl = -0.20
+            fr = -0.20
             for _ in range(5):
                 e = e + 0.25
                 fa = -0.20
@@ -176,7 +176,7 @@ class motko:
                             for fc in range(5):
                                 for c in range(5):
                                     for mtc in range(5):
-                                        self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e, fa, fl, fr, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc]))))))
+                                        # self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e, fa, fl, fr, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc]))))))
                                         self.ds.addSample([e, fa, fl, fr, fc, c, mtc], self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc])))
             self.saveDS("Basic_Test_TrainingSet.ds")
             self.printlog("Create trainignset done")
@@ -249,11 +249,13 @@ class motko:
             # self.trainer.trainEpochs(1)
             # self.currenterror = self.trainer.train()
             # self.printlog("trainUntilConvergence1: %s" % (self.currenterror))
-            if(self.test is not True):
+            if(self.test):
+                self.currenterror = self.trainer.train()
+            else:
                 print (self.ds)
-            for _ in range(50):
-                self.trainer.trainUntilConvergence()
-            self.currenterror = self.trainer.train()
+                for _ in range(50):
+                    self.trainer.trainUntilConvergence()
+                self.currenterror = self.trainer.train()
             # self.printlog("curren error {}".format(self.currenterror))
             # self.printlog("%s: %s: %s" % (" ".join(str(x) for x in self.roundfloat(liveinput)), " ".join(str(x) for x in self.roundfloat(self.trainingresult)), " ".join(str(x) for x in self.roundfloat(self.nn.activate(liveinput)))))
             self.trainsteps = 0
@@ -431,7 +433,8 @@ class motko:
         self.energy = 1
         self.shadow[:] = []
         self.movecount = 0
-        self.startime = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
+        self.startime = datetime.datetime.now()
+        print("startime", self.startime)
 
     @timing_function
     def live(self, dontPrintInfo=False, test=False):
@@ -605,8 +608,11 @@ class motko:
 
     @timing_function
     def areyouallive(self):
-        time2 = datetime.datetime.fromtimestamp(time.mktime(time.gmtime()))
+        time2 = datetime.datetime.now()
         diff = time2 - self.startime
+        print (self.startime)
+        print (time2)
+        print (diff.total_seconds())
         if(self.test):
             if(self.energy < -5.00 or self.energy > 5.00):
                 return (["dood", self.energy, self.move, self.trainings])
