@@ -243,23 +243,25 @@ class motko:
     @timing_function
     def responce(self, liveinput):
         self.trainingresult = self.gettraining2(liveinput, self.nn.activate(liveinput))
-        self.ds.addSample(liveinput, self.trainingresult)
-        if(self.trainsteps == self.aftermovestrain):
-            self.trainer = BackpropTrainer(self.nn, self.ds, learningrate=0.6, momentum=0.1)  # small learning rate should it be bigger?
-            # self.trainer.trainEpochs(1)
-            # self.currenterror = self.trainer.train()
-            # self.printlog("trainUntilConvergence1: %s" % (self.currenterror))
-            if(self.test):
-                self.currenterror = self.trainer.train()
-            else:
-                print (self.ds)
-                for _ in range(50):
-                    self.trainer.trainUntilConvergence()
-                self.currenterror = self.trainer.train()
-            # self.printlog("curren error {}".format(self.currenterror))
-            # self.printlog("%s: %s: %s" % (" ".join(str(x) for x in self.roundfloat(liveinput)), " ".join(str(x) for x in self.roundfloat(self.trainingresult)), " ".join(str(x) for x in self.roundfloat(self.nn.activate(liveinput)))))
-            self.trainsteps = 0
-            self.trainings += 1
+        if(self.trainsteps > self.trytolivesteps):
+            self.ds.addSample(liveinput, self.trainingresult)
+            if(self.trainsteps - self. trytolivesteps == self.aftermovestrain):
+                self.trainer = BackpropTrainer(self.nn, self.ds, learningrate=0.6, momentum=0.1)  # small learning rate should it be bigger?
+                # self.trainer.trainEpochs(1)
+                # self.currenterror = self.trainer.train()
+                # self.printlog("trainUntilConvergence1: %s" % (self.currenterror))
+                if(self.test):
+                    self.currenterror = self.trainer.train()
+                else:
+                    for _ in range(50):
+                        self.trainer.trainUntilConvergence()
+                    self.currenterror = self.trainer.train()
+                    self.printlog(self.getliveinfo())
+                # self.printlog("curren error {}".format(self.currenterror))
+                # self.printlog("%s: %s: %s" % (" ".join(str(x) for x in self.roundfloat(liveinput)), " ".join(str(x) for x in self.roundfloat(self.trainingresult)), " ".join(str(x) for x in self.roundfloat(self.nn.activate(liveinput)))))
+                self.trainsteps = 0
+                self.trainings += 1
+                self.trytolivesteps = 0
         if(len(self.ds) == 5000):
             self.ds.clear()
         return self.nn.activate(liveinput)
@@ -322,6 +324,7 @@ class motko:
         self.movememory = []
         self.trainsteps = 0
         self.aftermovestrain = 100
+        self.trytolivesteps = 2000
         self.randomcount = random.randint(5, 50)
 
         self.size = (5 + int(self.energy * 6))
@@ -434,7 +437,6 @@ class motko:
         self.shadow[:] = []
         self.movecount = 0
         self.startime = datetime.datetime.now()
-        print("startime", self.startime)
 
     @timing_function
     def live(self, dontPrintInfo=False, test=False):
@@ -463,10 +465,10 @@ class motko:
             if (self.eat > 0):
                 if(self.foodavail > 0):
                     self.energy = self.energy + self.eatamount
-                if(self.foodcolor == self.colornumber):  # eatinmg wrong food
-                    print ("dood by eating wrong color {} vs {}".format(self.foodcolor, self.colornumber))
-                    self.doodReason = "exception dood"
-                    return 1
+                # if(self.foodcolor == self.colornumber):  # eatinmg wrong food
+                    # printlog("dood by eating wrong color {} vs {}".format(self.foodcolor, self.colornumber))
+                    # self.doodReason = "exception dood"
+                    # return 1
 
             self.energy = self.energy - self.consumption
 
@@ -610,9 +612,6 @@ class motko:
     def areyouallive(self):
         time2 = datetime.datetime.now()
         diff = time2 - self.startime
-        print (self.startime)
-        print (time2)
-        print (diff.total_seconds())
         if(self.test):
             if(self.energy < -5.00 or self.energy > 5.00):
                 return (["dood", self.energy, self.move, self.trainings])
@@ -624,8 +623,8 @@ class motko:
             return ["ok"]
         else:
             if(self.energy < -5.00 or self.energy > 5.00):
-                #  self.energy = 2
-                return ["dood"]
+                self.energy = 2
+                # return ["dood"]
             elif (self.trainings == 1000):
                 return ["dood"]
             if(self.doodReason == "exception dood"):
