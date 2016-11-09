@@ -49,21 +49,21 @@ class motkowrapper:
     @timing_function
     def checkiftrainingsetexits(self, test=False):
         if(test):
-            filename = "Basic_Test_TrainingSet.ds"
+            filename = "Basic_Test_TrainingSet_{0}.ds".format(self.motkolive.colornumber)
         else:
-            filename = "Basic_TrainingSet.ds"
+            filename = "Basic_TrainingSet_{0}.ds".format(self.motkolive.colornumber)
         if(os.path.isfile(os.path.join(self.cwd, filename)) is False):
             print("No {}, creating one".format(filename))
-            self.motkolive.CreateTrainingset(test)
+            self.motkolive.CreateTrainingset(self.motkolive.colornumber, smallerTS=test)
 
     @timing_function
     def trainfromfileds(self, loops, trainUntilConvergence=False, smallerTS=False):
         if(smallerTS):
-            filename = "Basic_Test_TrainingSet.ds"
+            filename = "Basic_Test_TrainingSet_{0}.ds".format(self.motkolive.colornumber)
         else:
-            filename = "Basic_TrainingSet.ds"
+            filename = "Basic_TrainingSet_{0}.ds".format(self.motkolive.colornumber)
         if(os.path.isfile(os.path.join(self.cwd, filename)) is False):
-            self.motkolive.CreateTrainingset(smallerTS)
+            self.motkolive.CreateTrainingset(self.motkolive.colornumber, smallerTS=smallerTS)
         self.motkolive.trainfromfileds(SupervisedDataSet.loadFromFile(filename), loops, trainUntilConvergence)
 
     @timing_function
@@ -150,7 +150,7 @@ class motko:
         # self.printlog("hiddenLayerAmount:{}".format(self.hiddenLayerAmount))
 
     @timing_function
-    def CreateTrainingset(self, smallerTS=False):
+    def CreateTrainingset(self, color, smallerTS=False):
         if(smallerTS):
             self.printlog("starting to create trainignset")
             sys.stdout.flush()
@@ -174,11 +174,10 @@ class motko:
                         for _ in range(6):
                             fr = fr + 0.25
                             for fc in range(5):
-                                for c in range(5):
-                                    for mtc in range(5):
-                                        # self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e, fa, fl, fr, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc]))))))
-                                        self.ds.addSample([e, fa, fl, fr, fc, c, mtc], self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc])))
-            self.saveDS("Basic_Test_TrainingSet.ds")
+                                for mtc in range(5):
+                                    # self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e, fa, fl, fr, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e, fa, fl, fr, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc]))))))
+                                    self.ds.addSample([e, fa, fl, fr, fc, color, mtc], self.gettraining2([e, fa, fl, fr, fc, color, mtc], self.nn.activate([e, fa, fl, fr, fc, color, mtc])))
+            self.saveDS("Basic_Test_TrainingSet_{0}.ds".format(color))
             self.printlog("Create trainignset done")
             self.printlog("starting to create trainignset")
             sys.stdout.flush()
@@ -188,19 +187,20 @@ class motko:
                     for fl in range(1, 11, 2):
                         for fr in range(1, 11, 2):
                             for fc in range(5):
-                                for c in range(5):
                                     for mtc in range(5):
                                         # self.printlog("self.ds.addSample([%s], [%s]" % (" ".join(str(x) for x in self.roundfloat([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc])), " ".join(str(x) for x in self.roundfloat(self.gettraining2([e*0.1, fa*0.1, fl*0.1, fr*0.1, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc])))))
-                                        self.ds.addSample([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc], self.gettraining2([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, c, mtc], self.nn.activate([e, fa, fl, fr, fc, c, mtc])))
-            self.saveDS("Basic_TrainingSet.ds")
+                                        self.ds.addSample([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, color, mtc], self.gettraining2([e * 0.1, fa * 0.1, fl * 0.1, fr * 0.1, fc, color, mtc], self.nn.activate([e, fa, fl, fr, fc, color, mtc])))
+            self.saveDS("Basic_TrainingSet_{0}.ds".format(color))
             self.printlog("Create trainignset done")
+            sys.stdout.flush()
 
     @timing_function
     def trainerTrainUntilConvergence(self):
         for i in range(1):
             self.printlog("before", self.trainer.train())
             sys.stdout.flush()
-            self.trainer.trainUntilConvergence(validationProportion=0.2)
+            self.trainer.trainEpochs(1)
+            # self.trainer.trainUntilConvergence(validationProportion=0.2)
         self.currenterror = self.trainer.train()
         self.printlog("after", self.trainer.train())
         sys.stdout.flush()
@@ -219,7 +219,7 @@ class motko:
     def trainfromfileds(self, fileds, loops=10, trainUntilConvergence=False):
         self.printlog("Loading training set {} samples long".format(len(fileds)))
         sys.stdout.flush()
-        filedstrainer = BackpropTrainer(self.nn, fileds, learningrate=0.1, momentum=0.1)  # small learning rate should it be bigger?
+        filedstrainer = BackpropTrainer(self.nn, fileds, learningrate=0.6, momentum=0.4)  # small learning rate should it be bigger?
         self.printlog("Loading training set done")
         sys.stdout.flush()
         if(trainUntilConvergence):
@@ -227,6 +227,7 @@ class motko:
             for i in range(1, loops + 1):
                 self.printlog("Loop {}, before error:{}".format(i, filedstrainer.train()))
                 sys.stdout.flush()
+                # self.trainer.trainEpochs(1)
                 filedstrainer.trainUntilConvergence(validationProportion=0.2)
                 self.printlog("Loop {}, after error:{}".format(i, filedstrainer.train()))
                 sys.stdout.flush()
@@ -244,8 +245,9 @@ class motko:
     def responce(self, liveinput):
         self.trainingresult = self.gettraining2(liveinput, self.nn.activate(liveinput))
         if(self.trainsteps > self.trytolivesteps):
+            self.printlog("{0}: {1}: {2}".format(self.trainsteps, self.trytolivesteps, self.aftermovestrain))
             self.ds.addSample(liveinput, self.trainingresult)
-            if(self.trainsteps - self. trytolivesteps == self.aftermovestrain):
+            if(self.trainsteps - self.trytolivesteps == self.aftermovestrain):
                 self.trainer = BackpropTrainer(self.nn, self.ds, learningrate=0.6, momentum=0.1)  # small learning rate should it be bigger?
                 # self.trainer.trainEpochs(1)
                 # self.currenterror = self.trainer.train()
@@ -253,7 +255,7 @@ class motko:
                 if(self.test):
                     self.currenterror = self.trainer.train()
                 else:
-                    for _ in range(50):
+                    for _ in range(100):
                         self.trainer.trainUntilConvergence()
                     self.currenterror = self.trainer.train()
                     self.printlog(self.getliveinfo())
@@ -261,8 +263,8 @@ class motko:
                 # self.printlog("%s: %s: %s" % (" ".join(str(x) for x in self.roundfloat(liveinput)), " ".join(str(x) for x in self.roundfloat(self.trainingresult)), " ".join(str(x) for x in self.roundfloat(self.nn.activate(liveinput)))))
                 self.trainsteps = 0
                 self.trainings += 1
-                self.trytolivesteps = 0
-        if(len(self.ds) == 5000):
+
+        if(len(self.ds) == 500):
             self.ds.clear()
         return self.nn.activate(liveinput)
 

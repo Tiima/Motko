@@ -29,14 +29,14 @@ def motkotrainer(filename, size, hiddenlayeramount, trainingloops, trainingamoun
                 loopstrained += trainingamount
                 filenametemp = "%s_%d_%s" % (filename.split('_')[0], (loopstrained), filename.split('_')[2])
                 motkoinstance.motkolive.setname(filenametemp)
-                motkoinstance.trainfromfileds(trainingamount, trainUntilConvergence, smallerTS)
+                motkoinstance.trainfromfileds(trainingamount, trainUntilConvergence, smallerTS=smallerTS)
                 motkoinstance.saveNNwithname(filenametemp)
     else:
         for _ in range(trainingloops):
                 loopstrained += trainingamount
                 filenametemp = "%s_%d_%s" % (filename.split('_')[0], (loopstrained), filename.split('_')[2])
                 motkoinstance.motkolive.setname(filenametemp)
-                motkoinstance.trainfromfileds(trainingamount, trainUntilConvergence, smallerTS)
+                motkoinstance.trainfromfileds(trainingamount, trainUntilConvergence, smallerTS=smallerTS)
                 motkoinstance.saveNNwithname(filenametemp)
     motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), "Stop training\n", 'a+')
     motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo2(), 'a+')
@@ -69,6 +69,8 @@ def trainmotkos(filename, size, hiddenlayeramount, trainUntilConvergence=False, 
         p.start()
     else:
         for i in range(1, amount + 1):
+            print("starting to train %s_%d_%d.pkl" % (filename.split('_')[0], trainingloops, i))
+            # motkotrainer("%s_%d_%d.pkl" % (filename.split('_')[0], trainingloops, i), size, hiddenlayeramount, trainingloops, trainingamount, "", trainUntilConvergence, smallerTS)
             p = multiprocessing.Process(target=motkotrainer, args=("%s_%d_%d.pkl" % (filename.split('_')[0], trainingloops, i), size, hiddenlayeramount, trainingloops, trainingamount, "", trainUntilConvergence, smallerTS))
             trainers.append(p)
             p.start()
