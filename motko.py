@@ -146,7 +146,7 @@ class motko:
             self.nn.addConnection(self.connections[i])
 
         self.nn.sortModules()
-        self.printlog(self.getliveinfo2())
+        # self.printlog(self.getliveinfo2())
         # self.printlog("hiddenLayerAmount:{}".format(self.hiddenLayerAmount))
 
     @timing_function
@@ -217,19 +217,21 @@ class motko:
 
     @timing_function
     def trainfromfileds(self, fileds, loops=10, trainUntilConvergence=False):
-        self.printlog("Loading training set {} samples long".format(len(fileds)))
+        # self.printlog("Loading training set {} samples long".format(len(fileds)))
         sys.stdout.flush()
         filedstrainer = BackpropTrainer(self.nn, fileds, learningrate=0.6, momentum=0.4)  # small learning rate should it be bigger?
-        self.printlog("Loading training set done")
+        # self.printlog("Loading training set done")
         sys.stdout.flush()
         if(trainUntilConvergence):
             self.printlog("Starting trainUntilConvergence {} loops".format(loops))
             for i in range(1, loops + 1):
-                self.printlog("Loop {}, before error:{}".format(i, filedstrainer.train()))
+                self.currenterror = filedstrainer.train()
+                self.printlog("Loop {}, before error:{}".format(i, self.currenterror))
                 sys.stdout.flush()
-                # self.trainer.trainEpochs(1)
-                filedstrainer.trainUntilConvergence(validationProportion=0.2)
-                self.printlog("Loop {}, after error:{}".format(i, filedstrainer.train()))
+                filedstrainer.trainEpochs(1)
+                # filedstrainer.trainUntilConvergence(validationProportion=0.2)
+                self.currenterror = filedstrainer.train()
+                self.printlog("Loop {}, after error:{}".format(i, self.currenterror))
                 sys.stdout.flush()
         else:
             self.printlog("Starting training {} loops".format(loops))

@@ -21,26 +21,33 @@ def motkotrainer(filename, size, hiddenlayeramount, trainingloops, trainingamoun
         motkoinstance = motko.motkowrapper(filename, size, hiddenlayeramount, False)
         loopstrained = 0
     # self.threadLock.release()trainUntilConvergencetrainUntilConvergence
-    motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), "Start training\n", 'a+')
-    motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo2(), 'r+')
-    motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo3(), 'a+')
     if(trainUntilConvergence):
             for _ in range(trainingloops):
                 loopstrained += trainingamount
                 filenametemp = "%s_%d_%s" % (filename.split('_')[0], (loopstrained), filename.split('_')[2])
                 motkoinstance.motkolive.setname(filenametemp)
+                motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), "Start training\n", 'a+')
+                motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo2(), 'r+')
+                motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo3(), 'a+')
                 motkoinstance.trainfromfileds(trainingamount, trainUntilConvergence, smallerTS=smallerTS)
                 motkoinstance.saveNNwithname(filenametemp)
+                motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), "Stop training\n", 'a+')
+                motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo2(), 'a+')
+                motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo3(), 'a+')
     else:
         for _ in range(trainingloops):
                 loopstrained += trainingamount
                 filenametemp = "%s_%d_%s" % (filename.split('_')[0], (loopstrained), filename.split('_')[2])
                 motkoinstance.motkolive.setname(filenametemp)
+                motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), "Start training\n", 'a+')
+                motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo2(), 'r+')
+                motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo3(), 'a+')
                 motkoinstance.trainfromfileds(trainingamount, trainUntilConvergence, smallerTS=smallerTS)
                 motkoinstance.saveNNwithname(filenametemp)
-    motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), "Stop training\n", 'a+')
-    motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo2(), 'a+')
-    motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo3(), 'a+')
+                motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), "Stop training\n", 'a+')
+                motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo2(), 'a+')
+                motkoinstance.motkolive.saveLog("{}.log".format(motkoinstance.motkolive.filename), motkoinstance.motkolive.getliveinfo3(), 'a+')
+
     del motkoinstance
 
 
