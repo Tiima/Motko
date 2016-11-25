@@ -223,7 +223,7 @@ class motko:
         # self.printlog("Loading training set done")
         sys.stdout.flush()
         if(trainUntilConvergence):
-            self.printlog("Starting trainUntilConvergence {} loops".format(loops))
+            # self.printlog("Starting trainUntilConvergence {} loops".format(loops))
             for i in range(1, loops + 1):
                 self.currenterror = filedstrainer.train()
                 self.printlog("Loop {}, before error:{}".format(i, self.currenterror))
