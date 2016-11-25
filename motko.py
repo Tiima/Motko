@@ -236,7 +236,8 @@ class motko:
         else:
             self.printlog("Starting training {} loops".format(loops))
             for i in range(1, loops + 1):
-                self.printlog("Loop {}, error:{}".format(i, filedstrainer.train()))
+                self.currenterror = filedstrainer.train()
+                self.printlog("Loop {}, error:{}".format(i, self.currenterror))
                 sys.stdout.flush()
 
     @timing_function
