@@ -76,7 +76,7 @@ def trainmotkos(filename, size, hiddenlayeramount, trainUntilConvergence=False, 
         p.start()
     else:
         for i in range(1, amount + 1):
-            print("starting to train %s_%d_%d.pkl" % (filename.split('_')[0], trainingloops, i))
+            # print("starting to train %s_%d_%d.pkl" % (filename.split('_')[0], trainingloops, i))
             # motkotrainer("%s_%d_%d.pkl" % (filename.split('_')[0], trainingloops, i), size, hiddenlayeramount, trainingloops, trainingamount, "", trainUntilConvergence, smallerTS)
             p = multiprocessing.Process(target=motkotrainer, args=("%s_%d_%d.pkl" % (filename.split('_')[0], trainingloops, i), size, hiddenlayeramount, trainingloops, trainingamount, "", trainUntilConvergence, smallerTS))
             trainers.append(p)

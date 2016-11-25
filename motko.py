@@ -75,13 +75,13 @@ class motkowrapper:
     def saveNN(self):
         with open(os.path.join(self.cwd, 'brains', self.filename), 'wb') as output:
             pickle.dump(self.motkolive, output, pickle.HIGHEST_PROTOCOL)
-        print ("%s saved" % (self.filename))
+        # print ("%s saved" % (self.filename))
 
     @timing_function
     def saveNNwithname(self, name):
         with open(os.path.join(self.cwd, 'brains', name), 'wb') as output:
             pickle.dump(self.motkolive, output, pickle.HIGHEST_PROTOCOL)
-        print ("%s saved" % (name))
+        # print ("%s saved" % (name))
 
     @timing_function
     def saveViableNN(self):
@@ -234,7 +234,7 @@ class motko:
                 self.printlog("Loop {}, after error:{}".format(i, self.currenterror))
                 sys.stdout.flush()
         else:
-            self.printlog("Starting training {} loops".format(loops))
+            # self.printlog("Starting training {} loops".format(loops))
             for i in range(1, loops + 1):
                 self.currenterror = filedstrainer.train()
                 self.printlog("Loop {}, error:{}".format(i, self.currenterror))
